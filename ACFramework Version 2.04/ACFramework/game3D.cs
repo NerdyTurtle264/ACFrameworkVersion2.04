@@ -474,9 +474,9 @@ namespace ACFramework
 					//Always make some setViewpoint call simply to put in a default zoom.
 				    value.zoom( 0.35f ); //Wideangle 
 				    cListenerViewerRide prider = ( cListenerViewerRide )( value.Listener); 
-				    prider.Offset = (new cVector3( -1.5f, 0.0f, 1.0f)); /* This offset is in the coordinate
+				    prider.Offset = (new cVector3(2.5f, -8.0f, 0.0f)); /* This offset is in the coordinate
 				    system of the player, where the negative X axis is the negative of the
-				    player's tangent direction, which means stand right behind the player. */ 
+				    player's tangent direction, which means stand right behind the player. */
 			    } 
 			    else //Not riding the player.
 			    { 
