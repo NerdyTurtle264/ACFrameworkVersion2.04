@@ -49,8 +49,9 @@ namespace ACFramework
         public cCritter3DPlayer( cGame pownergame ) 
             : base( pownergame ) 
 		{ 
-			BulletClass = new cCritter3DPlayerBullet( ); 
-            Sprite = new cSpriteSphere(); 
+			BulletClass = new cCritter3DPlayerBullet( );
+            Sprite = new cSpriteQuake(ModelsMD2.TekkBlade); 
+            //Sprite = new cSpriteSphere();
 			Sprite.FillColor = Color.DarkGreen; 
 			Sprite.SpriteAttitude = cMatrix3.scale( 2, 0.8f, 0.4f ); 
 			setRadius( cGame3D.PLAYERRADIUS ); //Default cCritter.PLAYERRADIUS is 0.4.  
@@ -322,7 +323,7 @@ namespace ACFramework
 	{ 
 		public static readonly float TREASURERADIUS = 1.2f; 
 		public static readonly float WALLTHICKNESS = 0.5f; 
-		public static readonly float PLAYERRADIUS = 0.2f; 
+		public static readonly float PLAYERRADIUS = 1.0f; 
 		public static readonly float MAXPLAYERSPEED = 30.0f; 
 		private cCritterTreasure _ptreasure; 
 		private bool doorcollision;
@@ -469,12 +470,13 @@ namespace ACFramework
             set
             {
 			    if ( value.Listener.RuntimeClass == "cListenerViewerRide" ) 
-			    { 
-				    value.setViewpoint( new cVector3( 0.0f, 0.3f, -1.0f ), _border.Center); 
+			    {
+                    //value.setViewpoint( new cVector3( 0.0f, 0.3f, -1.0f ), _border.Center); 
+                    value.setViewpoint(Player.Position, _border.Center);
 					//Always make some setViewpoint call simply to put in a default zoom.
 				    value.zoom( 0.35f ); //Wideangle 
 				    cListenerViewerRide prider = ( cListenerViewerRide )( value.Listener); 
-				    prider.Offset = (new cVector3(2.5f, -8.0f, 0.0f)); /* This offset is in the coordinate
+				    prider.Offset = (new cVector3(5.0f, -10.0f, 0.0f)); /* This offset is in the coordinate
 				    system of the player, where the negative X axis is the negative of the
 				    player's tangent direction, which means stand right behind the player. */
 			    } 
