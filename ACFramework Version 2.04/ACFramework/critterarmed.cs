@@ -223,8 +223,74 @@ namespace ACFramework
 
 
     } 
-	
-	class cCritterBulletRubber : cCritterBullet 
+    /// <summary>
+    /// //////////////////////////////////////////////////////////////////////////
+    /// Set speed to 0
+    /// Set only player can pick up
+    /// Increase HP on pickup
+    /// </summary>
+    class cCritterBulletPickup : cCritterBullet
+    {
+
+        /// <summary>
+        /// This function checks if it has hit a target.  If it has, the damage function is called on the target,
+        /// and the bullet dies.  The hit score is returned from the damage function and added to the shooter's 
+        /// score using addScore.
+        /// </summary>
+        /// <param name="pcritter">The critter being tested for the bullet's target.</param>
+        /// <returns></returns>
+        public override bool collide(cCritter pcritter)
+        {
+            //If you hit a target, check if player
+            //If player, pickUp
+            if (_baseAccessControl == 1)
+                return base.collide(pcritter);
+            if (isTarget(pcritter))
+            {
+                if (!touch(pcritter))
+                    return false;
+                int hitscore = pcritter.damage(_hitstrength);
+                delete_me(); //Makes a service request, but you won't go away yet.
+                return true;
+            }
+            //Bounce off or everything else.
+            return base.collide(pcritter); //Bounce off non-target critters 
+        }
+
+
+        /// <summary>
+        /// Tests to see if this critter is any kind of class derived from the base class being used.  
+        /// If you would like to see if this critter is any kind of bullet, for example,
+        /// you would pass in the string for the class name "cCritterBullet".  If will return true if is a
+        /// cCritterBullet object or any object of a class derived from cCritterBullet.
+        /// </summary>
+        /// <param name="str">The class name to test.</param>
+        /// <returns>Returns true if this critter is a kind of the class, and false otherwise.</returns>
+        public override bool IsKindOf(string str)
+        {
+            return str == "cCritterBullet" || base.IsKindOf(str);
+        }
+
+        
+        /// <summary>
+        /// Gets the name of this class as a string -- useful for polymorphism
+        /// </summary>
+        public override string RuntimeClass
+        {
+            get
+            {
+                return "cCritterBullet";
+            }
+        }
+
+    }
+    /// <summary>
+    /// //////////////////////////////////////////////////////////////////////////
+    /// </summary>
+    /// 
+
+
+    class cCritterBulletRubber : cCritterBullet 
 	{ 
 		public static readonly new bool DIEATEDGES = false; //If TRUE they disappear at edges, no bounce or wrap.
 		public static readonly new float DENSITY = 100.0f; 
