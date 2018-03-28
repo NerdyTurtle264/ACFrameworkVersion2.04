@@ -323,7 +323,7 @@ namespace ACFramework
 		public static readonly float TREASURERADIUS = 1.2f; 
 		public static readonly float WALLTHICKNESS = 0.5f; 
 		public static readonly float PLAYERRADIUS = 1.0f; 
-		public static readonly float MAXPLAYERSPEED = 30.0f; 
+		public static readonly float MAXPLAYERSPEED = 60.0f; 
 		private cCritterTreasure _ptreasure; 
 		private bool doorcollision;
         private bool wentThrough = false;
