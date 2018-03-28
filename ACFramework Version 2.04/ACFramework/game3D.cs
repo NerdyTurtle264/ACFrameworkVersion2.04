@@ -62,10 +62,9 @@ namespace ACFramework
 			MaxSpeed =  cGame3D.MAXPLAYERSPEED; 
 			AbsorberFlag = true; //Keeps player from being buffeted about.
 			ListenerAcceleration = 160.0f; //So Hopper can overcome gravity.  Only affects hop.
-		
-            // YHopper hop strength 12.0
-			Listener = new cListenerScooterYHopper( 0.2f, 12.0f ); 
-            // the two arguments are walkspeed and hop strength -- JC
+
+
+            Listener = new cListenerAttackAndMove();
             
             addForce( new cForceGravity( 50.0f )); /* Uses  gravity. Default strength is 25.0.
 			Gravity	will affect player using cListenerHopper. */ 
