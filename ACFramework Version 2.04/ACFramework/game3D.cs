@@ -166,9 +166,42 @@ namespace ACFramework
                 return "cCritter3DPlayerBullet";
             }
         }
-	} 
-	
-	class cCritter3Dcharacter : cCritter  
+	}
+
+    class cCritter3DEnemyRocket : cCritterBulletSilverMissile
+    {
+
+        public cCritter3DEnemyRocket() { }
+
+        public override cCritterBulletSilverMissile Create()
+        // has to be a Create function for every type of bullet -- JC
+        {
+            return new cCritter3DEnemyRocket();
+        }
+
+        public override void initialize(cCritterArmed pshooter)
+        {
+            base.initialize(pshooter);
+            Sprite = new cSpriteQuake()
+            // can use setSprite here too
+            setRadius(0.1f);
+        }
+
+        public override bool IsKindOf(string str)
+        {
+            return str == "cCritter3DEnemyRocket" || base.IsKindOf(str);
+        }
+
+        public override string RuntimeClass
+        {
+            get
+            {
+                return "cCritter3DEnemyRocket";
+            }
+        }
+    }
+
+    class cCritter3Dcharacter : cCritter  
 	{ 
 		
         public cCritter3Dcharacter( cGame pownergame ) 
@@ -179,11 +212,13 @@ namespace ACFramework
 			Density = 2.0f; 
 			MaxSpeed = 30.0f;
             if (pownergame != null) //Just to be safe.
-                Sprite = new cSpriteQuake(Framework.models.selectRandomCritter());
-            
+                Sprite = new cSpriteQuake(ModelsMD2.EVA);
+            //Sprite = new cSpriteQuake(Framework.models.selectRandomCritter());
+
+
             // example of setting a specific model
             // setSprite(new cSpriteQuake(ModelsMD2.Knight));
-            
+
             if ( Sprite.IsKindOf( "cSpriteQuake" )) //Don't let the figurines tumble.  
 			{ 
 				AttitudeToMotionLock = false;   

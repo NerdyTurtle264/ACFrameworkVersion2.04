@@ -85,6 +85,7 @@ namespace ACFramework
         public static readonly int Goopy = 3;
         public static readonly int LaserFire = 4;
         public static readonly int Hallelujah = 5;
+        public static readonly int Rocket = 5;
 
         private static readonly string[] sound = new string[] {
                 "pop.wav",
@@ -92,7 +93,8 @@ namespace ACFramework
                 "crunch.wav",
                 "goopy.wav",
                 "laserfire3.wav",
-                "hallelujah.wav"
+                "hallelujah.wav",
+                "bottlerocket.wav"
             };
 
         public Sound()
@@ -331,6 +333,8 @@ namespace ACFramework
         public static readonly int Link = 2;
         public static readonly int Knight = 3;
         public static readonly int CitrusFrog = 4;
+        public static readonly int EVA = 5;
+        public static readonly int Rocket = 6;
 
         // at least one must be set true
         private static readonly ModelsMD2Info[] minfo = {
@@ -338,7 +342,9 @@ namespace ACFramework
             new ModelsMD2Info( "robot", "robot.pcx", 0.2f, true ),
             new ModelsMD2Info( "link", "soft_link.pcx", 0.1f, true ),
             new ModelsMD2Info( "pknight", "ctf_b.pcx", 0.15f, true ),
-            new ModelsMD2Info( "citrusfrog", "BigRed.pcx", 0.3f, true )
+            new ModelsMD2Info( "citrusfrog", "BigRed.pcx", 0.3f, true ),
+            new ModelsMD2Info( "EVA-01", "eva-01.pcx", 0.2f, true )
+            new ModelsMD2Info( "EVA-01", "")
         };            
 
         private static int[] randomCritters;
