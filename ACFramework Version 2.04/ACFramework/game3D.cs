@@ -442,7 +442,7 @@ namespace ACFramework
 			Biota.purgeCritters( "cCritterBullet" ); 
 			Biota.purgeCritters( "cCritter3Dcharacter" );
             for (int i = 0; i < _seedcount; i++) 
-				new cCritter3Dcharacter( this );
+				new cCritterMinion( this );
             Player.moveTo(new cVector3(0.0f, Border.Loy, Border.Hiz - 3.0f)); 
 				/* We start at hiz and move towards	loz */ 
 		} 
@@ -507,7 +507,7 @@ namespace ACFramework
 			int modelcount = Biota.count( "cCritter3Dcharacter" ); 
 			int modelstoadd = _seedcount - modelcount; 
 			for ( int i = 0; i < modelstoadd; i++) 
-				new cCritter3Dcharacter( this ); 
+				new cCritterMinion( this ); 
 		// (3) Maybe check some other conditions.
 
             if (wentThrough && (Age - startNewRoom) > 2.0f)
