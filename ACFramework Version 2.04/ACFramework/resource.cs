@@ -334,7 +334,7 @@ namespace ACFramework
         public static readonly int Knight = 3;
         public static readonly int CitrusFrog = 4;
         public static readonly int EVA = 5;
-        public static readonly int Rocket = 6;
+        public static readonly int Grenade = 6;
 
         // at least one must be set true
         private static readonly ModelsMD2Info[] minfo = {
@@ -343,8 +343,8 @@ namespace ACFramework
             new ModelsMD2Info( "link", "soft_link.pcx", 0.1f, true ),
             new ModelsMD2Info( "pknight", "ctf_b.pcx", 0.15f, true ),
             new ModelsMD2Info( "citrusfrog", "BigRed.pcx", 0.3f, true ),
-            new ModelsMD2Info( "EVA-01", "eva-01.pcx", 0.2f, true )
-            new ModelsMD2Info( "EVA-01", "")
+            new ModelsMD2Info( "EVA-01", "eva-01.pcx", 0.2f, true ),
+            new ModelsMD2Info( "grenade", "a_grenades.PCX", 0.3f, false)
         };            
 
         private static int[] randomCritters;

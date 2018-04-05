@@ -100,3 +100,10 @@ C:\Users\Johnny\Documents\GitHub\ACFrameworkVersion2.04\ACFramework Version 2.04
 C:\Users\Johnny\Documents\GitHub\ACFrameworkVersion2.04\ACFramework Version 2.04\ACFramework\obj\Debug\ACFramework.csproj.CoreCompileInputs.cache
 C:\Users\Johnny\Documents\GitHub\ACFrameworkVersion2.04\ACFramework Version 2.04\ACFramework\obj\Debug\ACFramework.exe
 C:\Users\Johnny\Documents\GitHub\ACFrameworkVersion2.04\ACFramework Version 2.04\ACFramework\obj\Debug\ACFramework.pdb
+C:\Users\carlstudent\Documents\GitHub\ACFrameworkVersion2.04\ACFramework Version 2.04\ACFramework\obj\Debug\ACFramework.exe
+C:\Users\carlstudent\Documents\GitHub\ACFrameworkVersion2.04\ACFramework Version 2.04\ACFramework\obj\Debug\ACFramework.pdb
+C:\Users\carlstudent\Documents\GitHub\ACFrameworkVersion2.04\ACFramework Version 2.04\ACFramework\bin\Debug\ACFramework.exe
+C:\Users\carlstudent\Documents\GitHub\ACFrameworkVersion2.04\ACFramework Version 2.04\ACFramework\bin\Debug\ACFramework.pdb
+C:\Users\carlstudent\Documents\GitHub\ACFrameworkVersion2.04\ACFramework Version 2.04\ACFramework\obj\Debug\ACFramework.csprojResolveAssemblyReference.cache
+C:\Users\carlstudent\Documents\GitHub\ACFrameworkVersion2.04\ACFramework Version 2.04\ACFramework\obj\Debug\ACFramework.Properties.Resources.resources
+C:\Users\carlstudent\Documents\GitHub\ACFrameworkVersion2.04\ACFramework Version 2.04\ACFramework\obj\Debug\ACFramework.csproj.GenerateResource.Cache

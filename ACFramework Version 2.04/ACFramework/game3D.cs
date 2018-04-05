@@ -149,8 +149,9 @@ namespace ACFramework
 		public override void initialize( cCritterArmed pshooter ) 
 		{ 
 			base.initialize( pshooter );
-            Sprite.FillColor = Color.Crimson;
+            // Sprite.FillColor = Color.Crimson;
             // can use setSprite here too
+            Sprite = new cSpriteQuake(ModelsMD2.Grenade);
             setRadius(0.1f);
 		} 
 
@@ -173,7 +174,7 @@ namespace ACFramework
 
         public cCritter3DEnemyRocket() { }
 
-        public override cCritterBulletSilverMissile Create()
+        public override cCritterBullet Create()
         // has to be a Create function for every type of bullet -- JC
         {
             return new cCritter3DEnemyRocket();
@@ -182,7 +183,7 @@ namespace ACFramework
         public override void initialize(cCritterArmed pshooter)
         {
             base.initialize(pshooter);
-            Sprite = new cSpriteQuake()
+            Sprite = new cSpriteQuake(ModelsMD2.Grenade);
             // can use setSprite here too
             setRadius(0.1f);
         }
