@@ -439,9 +439,9 @@ namespace ACFramework
             cRealBox3 skeleton = new cRealBox3();
             skeleton.copy(_border);
             setSkyBox(skeleton);
-            SkyBox.setAllSidesTexture(BitmapRes.Graphics1, 2);
-            SkyBox.setSideTexture(cRealBox3.LOY, BitmapRes.Concrete);
-            SkyBox.setSideSolidColor(cRealBox3.HIY, Color.Blue);
+            SkyBox.setAllSidesTexture(BitmapRes.Wall3, 2);
+            SkyBox.setSideTexture(cRealBox3.LOY, BitmapRes.Sand);
+            SkyBox.setSideTexture(cRealBox3.HIY, BitmapRes.Sand);
             _seedcount = 0;
 
             Player.setMoveBox(skeleton);
