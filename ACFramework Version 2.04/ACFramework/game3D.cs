@@ -336,7 +336,7 @@ namespace ACFramework
 			_menuflags |= cGame.MENU_HOPPER; //Turn on hopper listener option.
 			_spritetype = cGame.ST_MESHSKIN; 
 			setBorder( 64.0f, 16.0f, 64.0f ); // size of the world
-		
+            
 			cRealBox3 skeleton = new cRealBox3();
             skeleton.copy(_border);
 			setSkyBox( skeleton );
@@ -355,7 +355,8 @@ namespace ACFramework
 		
 			WrapFlag = cCritter.BOUNCE; 
 			_seedcount = 7; 
-			setPlayer( new cCritter3DPlayer( this )); 
+			setPlayer( new cCritter3DPlayer( this ));
+            Player.setMoveBox(skeleton);
 			_ptreasure = new cCritterTreasure( this ); 
 		
 			/* In this world the x and y go left and up respectively, while z comes out of the screen.
@@ -367,7 +368,7 @@ namespace ACFramework
 			float height = 0.1f * _border.YSize; 
 			float ycenter = -_border.YRadius + height / 2.0f; 
 			float wallthickness = cGame3D.WALLTHICKNESS;
-            cCritterWall pwall = new cCritterWall( 
+           /* cCritterWall pwall = new cCritterWall( 
 				new cVector3( _border.Midx + 2.0f, ycenter, zpos ), 
 				new cVector3( _border.Hix, ycenter, zpos ), 
 				height, //thickness param for wall's dy which goes perpendicular to the 
@@ -378,12 +379,12 @@ namespace ACFramework
 				new cSpriteTextureBox( pwall.Skeleton, BitmapRes.Wall3, 16 ); //Sets all sides 
 				/* We'll tile our sprites three times along the long sides, and on the
 			short ends, we'll only tile them once, so we reset these two. */
-          pwall.Sprite = pspritebox; 
+          //pwall.Sprite = pspritebox; 
 		
 		
 			//Then draw a ramp to the top of the wall.  Scoot it over against the right wall.
 			float planckwidth = 0.75f * height; 
-			pwall = new cCritterWall( 
+			/*pwall = new cCritterWall( 
 				new cVector3( _border.Hix -planckwidth / 2.0f, _border.Loy, _border.Hiz - 2.0f), 
 				new cVector3( _border.Hix - planckwidth / 2.0f, _border.Loy + height, zpos ), 
 				planckwidth, //thickness param for wall's dy which is perpenedicualr to the baseline, 
@@ -400,8 +401,16 @@ namespace ACFramework
 				0.1f, 2, this ); 
 			cSpriteTextureBox pspritedoor = 
 				new cSpriteTextureBox( pdwall.Skeleton, BitmapRes.Door ); 
-			pdwall.Sprite = pspritedoor; 
-		} 
+			pdwall.Sprite = pspritedoor;
+            */
+            cCritterWall invisWall = new cCritterInvisibleWall(
+                new cVector3(_border.Hix - 10, _border.Loy, _border.Hiz),
+                new cVector3(Border.Hix - 10, _border.Loy, _border.Loz),
+                planckwidth,
+                _border.Hiy - Border.Loy,
+                this);
+            Player.moveTo(new cVector3(_border.Lox, _border.Loy + 1.0f, _border.Loz + 3));
+        } 
 
         public void setRoom1( )
         {
@@ -475,7 +484,7 @@ namespace ACFramework
 					//Always make some setViewpoint call simply to put in a default zoom.
 				    value.zoom( 0.35f ); //Wideangle 
 				    cListenerViewerRide prider = ( cListenerViewerRide )( value.Listener); 
-				    prider.Offset = (new cVector3(5.0f, -10.0f, 0.0f)); /* This offset is in the coordinate
+				    prider.Offset = (new cVector3(5.0f, -15.0f, 0.0f)); /* This offset is in the coordinate
 				    system of the player, where the negative X axis is the negative of the
 				    player's tangent direction, which means stand right behind the player. */
 			    } 
