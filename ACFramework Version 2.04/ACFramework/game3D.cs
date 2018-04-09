@@ -414,8 +414,8 @@ namespace ACFramework
             skeleton.copy( _border );
 	        setSkyBox(skeleton);
 	        SkyBox.setAllSidesTexture( BitmapRes.Graphics1, 2 );
-	        SkyBox.setSideTexture( cRealBox3.LOY, BitmapRes.Concrete );
-	        SkyBox.setSideSolidColor( cRealBox3.HIY, Color.Blue );
+	        SkyBox.setSideTexture( cRealBox3.LOY, BitmapRes.Graphics2, 8 );
+	        SkyBox.setSideTexture( cRealBox3.HIY, BitmapRes.Concrete, 8 );
 	       // _seedcount = 0;
             Player.moveTo(new cVector3(0.0f, 0.0f, cRealBox3.HIZ));
             float zpos = 0.0f; /* Point on the z axis where we set down the wall.  0 would be center,
@@ -439,9 +439,9 @@ namespace ACFramework
             cRealBox3 skeleton = new cRealBox3();
             skeleton.copy(_border);
             setSkyBox(skeleton);
-            SkyBox.setAllSidesTexture(BitmapRes.Wall3, 2);
-            SkyBox.setSideTexture(cRealBox3.LOY, BitmapRes.Sand);
-            SkyBox.setSideTexture(cRealBox3.HIY, BitmapRes.Sand);
+            SkyBox.setAllSidesTexture(BitmapRes.Metal1);
+            SkyBox.setSideTexture(cRealBox3.LOY, BitmapRes.Metal1);
+            SkyBox.setSideTexture(cRealBox3.HIY, BitmapRes.Metal1);
             _seedcount = 0;
 
             Player.setMoveBox(skeleton);
