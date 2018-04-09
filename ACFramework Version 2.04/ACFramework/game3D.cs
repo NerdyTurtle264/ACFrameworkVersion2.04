@@ -391,8 +391,10 @@ namespace ACFramework
 		*/
 			cCritterDoor pdwall = new cCritterDoor( 
 				new cVector3( _border.Midx, _border.Loy, _border.Loz), 
-				new cVector3( _border.Midx, _border.Loy+3, _border.Loz ), 
-				0.1f, 2, this ); 
+				new cVector3( _border.Midx, _border.Loy+6, _border.Loz ), 
+				0.5f, 3, this );
+            pdwall.roll((float)Math.PI/2);
+
 			cSpriteTextureBox pspritedoor = 
 				new cSpriteTextureBox( pdwall.Skeleton, BitmapRes.Door ); 
 			pdwall.Sprite = pspritedoor;
