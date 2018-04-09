@@ -16,9 +16,15 @@ namespace ACFramework
         public override cVector3 force(cCritter pcritter)
         {
             if (Math.Abs(moveTowards.Position.X - pcritter.Position.X) < 1)
+            {
+                pcritter.Sprite.ModelState = State.Run;
                 return new cVector3(0, 0, 150);//(pcritter.Position.Z - moveTowards.Position.Z) * 100);
+            }
             else
-                return new cVector3((moveTowards.Position.X - pcritter.Position.X)*50, 0, 0);
+            {
+                pcritter.Sprite.ModelState = State.CrouchCrawl;
+                return new cVector3((moveTowards.Position.X - pcritter.Position.X) * 50, 0, 0);
+            }
         }
 
         public override void copy(cForce pforce)
