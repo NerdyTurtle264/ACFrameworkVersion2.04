@@ -190,7 +190,7 @@ namespace ACFramework
 			setRadius( 1.0f );
             MinTwitchThresholdSpeed = 4.0f; //Means sprite doesn't switch direction unless it's moving fast 
 			randomizePosition( new cRealBox3( new cVector3( _movebox.Lox, _movebox.Loy, _movebox.Loz + 4.0f), 
-				new cVector3( _movebox.Hix, _movebox.Loy, _movebox.Midz - 1.0f))); 
+				new cVector3( _movebox.Midx, _movebox.Loy, _movebox.Midz - 1.0f))); 
 				/* I put them ahead of the player  */ 
 			randomizeVelocity( 0.0f, 30.0f, false ); 
 
