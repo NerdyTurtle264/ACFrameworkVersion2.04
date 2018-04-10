@@ -227,17 +227,29 @@ namespace ACFramework
 
     class cCritter3DArmedEnemy : cCritterArmedRobot
     {
+        //Nonserializable fields 
+        protected new LinkedList<cCritterBulletGrenade> _bulletlist;
 
         public cCritter3DArmedEnemy(cGame pownergame)
             : base(pownergame)
         {
             _bshooting = true; //Assume enemy shoots whenever time is up.
-            WaitShoot = _waitshoot;
+            WaitShoot = 3.0f;
 
             addForce(new cForceGravity(25.0f, new cVector3(0.0f, -1, 0.00f)));
             addForce(new cForceDrag(20.0f));  // default friction strength 0.5 
             Density = 2.0f;
             MaxSpeed = 30.0f;
+
+            BulletClass = new cCritterBulletGrenade();
+            AimVector = _tangent;
+            _bulletlist = new LinkedList<cCritterBulletGrenade>(
+                delegate (out cCritterBulletGrenade c1, cCritterBulletGrenade c2)
+                {
+                    c1 = c2;
+                }
+                );
+
             if (pownergame != null) //Just to be safe.
                 Sprite = new cSpriteQuake(ModelsMD2.EVA);
             //Sprite = new cSpriteQuake(Framework.models.selectRandomCritter());
@@ -295,6 +307,7 @@ namespace ACFramework
             base.update(pactiveview, dt); //Always call this first
             if ((_outcode & cRealBox3.BOX_HIZ) != 0) /* use bitwise AND to check if a flag is set. */
                 delete_me(); //tell the game to remove yourself if you fall up to the hiz.
+            aimAt(_ptarget);
         }
 
         // do a delete_me if you hit the left end 
@@ -316,6 +329,46 @@ namespace ACFramework
             {
                 return "cCritter3DArmedEnemy";
             }
+        }
+        /// <summary>
+        /// Sets the _waitshoot interval.  When the Shooting property has been set to true and the Armed property 
+        /// has been set to true, the armed critter will fire a bullet after every _waitshoot time interval 
+        /// has elapsed.
+        /// </summary>
+        public override float WaitShoot
+        {
+            set
+            {
+                _waitshoot = value;
+                _ageshoot = _age - Framework.randomOb.randomReal(0.0f, _waitshoot);
+                /* Do this so they don't all shoot at once,	when you have several of them. */
+            }
+        }
+        /// <summary>
+        /// Creates a bullet, initializes it, adds it to the list of critters, and adds it to the bullet list.
+        /// It is returned in case the shooter wants to do anything else with it.
+        /// </summary>
+        /// <returns></returns>
+        public new cCritterBulletGrenade shoot()
+        {
+            cCritterBulletGrenade pbullet = new cCritterBulletGrenade();
+            pbullet.initialize(this);
+            pbullet.add_me(_pownerbiota); /* Makes a servicerequest to be handled by cBiota later. I used to
+				have _pownerbiota.Add(pbullet) here, but this makes a problem if I do
+				USEMETRIC; this is because _metric expects the critter's indices to stay fixed.
+				In general, I should not be adding or deleting any critters except
+				in the cBiota.processervicerequests call. Note that you have the default
+				FALSE value of the immediateadd argument to add_me, meaning you don't
+				add in this critter to the simulator cBiota until it finishes its current
+				update loop and has a chance to call processServiceRequests. */
+            _bulletlist.Add(pbullet); //Adds to end of my personal bullet-data array.
+            return pbullet; /* In case you want to overload cCritterArmed.shoot to do something else to 
+			the bullet. */
+        }
+        public void explode()
+        {
+            Sprite = new cSpriteSphere(cCritter.BULLETRADIUS + 20.00f, 6, 6);
+            Sprite.FillColor = Color.Yellow;
         }
     }
 
@@ -391,7 +444,7 @@ namespace ACFramework
         public static readonly float TREASURERADIUS = 1.2f;
         public static readonly float WALLTHICKNESS = 0.5f;
         public static readonly float PLAYERRADIUS = 0.2f;
-        public static readonly float MAXPLAYERSPEED = 30.0f;
+        public static readonly float MAXPLAYERSPEED = 20.0f;
         private cCritterTreasure _ptreasure;
         private bool doorcollision;
         private bool wentThrough = false;

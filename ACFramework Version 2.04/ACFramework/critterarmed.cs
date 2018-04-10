@@ -457,11 +457,11 @@ namespace ACFramework
         }
     }
 
-    class cCritter3DEnemyGrenade : cCritterBulletSilverMissile
+    class cCritterBulletGrenade : cCritterBulletSilverMissile
     {
         cCritterArmed _pshooter;
 
-        public cCritter3DEnemyGrenade()
+        public cCritterBulletGrenade()
         {
             _pshooter = null;
         }
@@ -469,7 +469,7 @@ namespace ACFramework
         public override cCritterBullet Create()
         // has to be a Create function for every type of bullet -- JC
         {
-            return new cCritter3DEnemyGrenade();
+            return new cCritterBulletGrenade();
         }
 
         public override void initialize(cCritterArmed pshooter)
@@ -480,16 +480,18 @@ namespace ACFramework
             setRadius(0.1f);
         }
 
+
+
         public override bool IsKindOf(string str)
         {
-            return str == "cCritter3DEnemyGrenade" || base.IsKindOf(str);
+            return str == "cCritterBulletGrenade" || base.IsKindOf(str);
         }
 
         public override string RuntimeClass
         {
             get
             {
-                return "cCritter3DEnemyGrenade";
+                return "cCritterBulletGrenade";
             }
         }
 
@@ -504,6 +506,7 @@ namespace ACFramework
             {
                 if (!touch(pcritter))
                     return false;
+                pcritter.explode();
                 int hitscore = pcritter.damage(_hitstrength);
                 delete_me(); //Makes a service request, but you won't go away yet.
                 if (_pshooter != null) //Possible that _pshooter has died, is NULL.
@@ -519,7 +522,7 @@ namespace ACFramework
     class cCritterArmed : cCritter
     {
         public static readonly float GUNLENGTH = 1.3f; //Ratio of gun length to critter radius, maybe 1.3.
-        public static readonly float WAITSHOOT = 0.06f; // The default interval to wait between shots.
+        public static readonly float WAITSHOOT = 2.5f; // The default interval to wait between shots.
         protected bool _armed; //Use this to turn the gun on or off.
         protected float _ageshoot; //Age at last shot, so you wait a bit between shots 
         protected float _waitshoot; //Time to wait between shots.

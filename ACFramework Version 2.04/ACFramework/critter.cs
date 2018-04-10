@@ -259,6 +259,15 @@ namespace ACFramework
             doubles	as a no-argument constructor.  */
 
         /// <summary>
+        /// Makes the critter appear to explode
+        /// </summary>
+        public void explode()
+        {
+            Sprite = new cSpriteSphere(MAXRADIUS + 2000.00f, 6, 6);
+            Sprite.FillColor = Color.Yellow;
+        }
+
+        /// <summary>
         /// Makes a deep copy of the parameter and places it into the host object.
         /// </summary>
         /// <param name="pcritter">The critter from which the deep copy is made.</param>
