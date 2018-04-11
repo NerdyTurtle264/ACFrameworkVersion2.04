@@ -267,6 +267,10 @@ namespace ACFramework
         public static readonly int U = 15;
         public static readonly int I = 16;
         public static readonly int D = 17;
+        public static readonly int A = 18;
+        public static readonly int W = 19;
+        public static readonly int S = 20;
+        public static readonly int Z = 21;
 
         public static Key[] key;
 
@@ -289,7 +293,11 @@ namespace ACFramework
                 Key.Delete,
                 Key.U,
                 Key.I,
-                Key.D
+                Key.D,
+                Key.A,
+                Key.W,
+                Key.S,
+                Key.Z
             };
 
         }
@@ -338,6 +346,7 @@ namespace ACFramework
         public static readonly int Knight = 3;
         public static readonly int CitrusFrog = 4;
         public static readonly int TekkBlade = 5;
+        public static readonly int Hunter = 6;
 
         // at least one must be set true
         private static readonly ModelsMD2Info[] minfo = {
@@ -346,7 +355,8 @@ namespace ACFramework
             new ModelsMD2Info( "link", "soft_link.pcx", 0.1f, true ),
             new ModelsMD2Info( "pknight", "ctf_b.pcx", 0.15f, true ),
             new ModelsMD2Info( "citrusfrog", "BigRed.pcx", 0.3f, true ),
-            new ModelsMD2Info( "Tekk-blade", "blade_black.pcx", 0.3f, false)
+            new ModelsMD2Info( "Tekk-blade", "blade_black.pcx", 0.3f, false),
+            new ModelsMD2Info( "Hunter", "darkhunter.pcx", 0.3f, false)
         };            
 
         private static int[] randomCritters;
