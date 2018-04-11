@@ -126,7 +126,38 @@ namespace ACFramework
                 return "cCritter3DPlayer";
             }
         }
-	} 
+
+        public override void feellistener(float dt)
+        {
+            base.feellistener(dt);  // will call cCritter feellistener
+
+            if (!shotDone) // if space key or left mouse button is pressed, turn off shooting until not preesed
+                _bshooting = false;
+            if (shotDone && (Framework.Leftclick))
+            { // if previous shot is done, turn on shooting when space key or left mouse button is pressed
+                _bshooting = true;
+                shotDone = false;
+            }
+            if (!shotDone && !timingAge && !Framework.Leftclick)
+            {
+                // space key and mouse button are both lifted, so wait a little
+                timingAge = true;
+                startTime = _age;
+            }
+
+            if (timingAge && (_age - startTime) > WAITSHOT)
+            // if you don't wait long enough, sounds can be distorted (problem with OpenAL)
+            {
+                timingAge = false;
+                shotDone = true;
+            }
+        }
+
+        public void MeleeAttack()
+        {
+            this.die();
+        }
+    } 
 	
    
 	class cCritter3DPlayerBullet : cCritterBullet 
