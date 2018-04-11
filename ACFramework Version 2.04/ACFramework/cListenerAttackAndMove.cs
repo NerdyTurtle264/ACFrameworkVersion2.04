@@ -27,7 +27,7 @@ namespace ACFramework
             bool lControl = Framework.Keydev[vk.ControlLeft];
 
 
-            if (!left && !right && !down && !up && !pagedown && !space)
+            if (!left && !right && !down && !up && !pagedown && !space && !lControl)
             {
                 pcritter.Velocity = new cVector3(0.0f, pcritter.Velocity.Y, 0.0f);
                 pcritter.Acceleration = new cVector3(0.0f, pcritter.Acceleration.Y, 0.0f);

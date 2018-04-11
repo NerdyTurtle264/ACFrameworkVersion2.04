@@ -111,6 +111,7 @@ namespace ACFramework
         public override cCritterBullet shoot()
         {
             Framework.snd.play(Sound.LaserFire);
+            Sprite.ModelState = State.CrouchWeapon;
             return base.shoot();
         }
 
