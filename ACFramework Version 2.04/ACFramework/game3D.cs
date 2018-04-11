@@ -49,8 +49,9 @@ namespace ACFramework
         public cCritter3DPlayer( cGame pownergame ) 
             : base( pownergame ) 
 		{ 
-			BulletClass = new cCritter3DPlayerBullet( ); 
-            Sprite = new cSpriteSphere(); 
+			BulletClass = new cCritter3DPlayerBullet( );
+            Sprite = new cSpriteQuake(ModelsMD2.TekkBlade); 
+            //Sprite = new cSpriteSphere();
 			Sprite.FillColor = Color.DarkGreen; 
 			Sprite.SpriteAttitude = cMatrix3.scale( 2, 0.8f, 0.4f ); 
 			setRadius( cGame3D.PLAYERRADIUS ); //Default cCritter.PLAYERRADIUS is 0.4.  
@@ -61,10 +62,9 @@ namespace ACFramework
 			MaxSpeed =  cGame3D.MAXPLAYERSPEED; 
 			AbsorberFlag = true; //Keeps player from being buffeted about.
 			ListenerAcceleration = 160.0f; //So Hopper can overcome gravity.  Only affects hop.
-		
-            // YHopper hop strength 12.0
-			Listener = new cListenerScooterYHopper( 0.2f, 12.0f ); 
-            // the two arguments are walkspeed and hop strength -- JC
+
+
+            Listener = new cListenerAttackAndMove();
             
             addForce( new cForceGravity( 50.0f )); /* Uses  gravity. Default strength is 25.0.
 			Gravity	will affect player using cListenerHopper. */ 
@@ -413,12 +413,13 @@ namespace ACFramework
 	class cGame3D : cGame 
 	{ 
 		public static readonly float TREASURERADIUS = 1.2f; 
-		public static readonly float WALLTHICKNESS = 0.5f; 
-		public static readonly float PLAYERRADIUS = 0.2f; 
-		public static readonly float MAXPLAYERSPEED = 30.0f; 
-		private cCritterTreasure _ptreasure;                        
+		public static readonly float WALLTHICKNESS = 0.5f;
+        
+		public static readonly float PLAYERRADIUS = 1.0f; 
+		public static readonly float MAXPLAYERSPEED = 60.0f; 
+		private cCritterTreasure _ptreasure;            
         private cCritter3Dpowerup _ppowerup;                        //powerup data member
-		private bool doorcollision;
+        private bool doorcollision;
         private bool wentThrough = false;
         private float startNewRoom;
 		
@@ -541,10 +542,10 @@ namespace ACFramework
 			Biota.purgeCritters( "cCritterBullet" ); 
 			Biota.purgeCritters( "cCritter3Dcharacter" );
             for (int i = 0; i < _seedcount; i++) 
-				new cCritter3Dcharacter( this );
+				new cCritterMinion( this );
             Player.moveTo(new cVector3(0.0f, Border.Loy, Border.Hiz - 3.0f));
-            /* We start at hiz and move towards	loz */
             _ppowerup = new cCritter3Dpowerup(this);   //effin works i dunno why ////////////////////////////////// 
+                                                       /* We start at hiz and move towards	loz */
         } 
 
 		
@@ -569,14 +570,15 @@ namespace ACFramework
             set
             {
 			    if ( value.Listener.RuntimeClass == "cListenerViewerRide" ) 
-			    { 
-				    value.setViewpoint( new cVector3( 0.0f, 0.3f, -1.0f ), _border.Center); 
+			    {
+                    //value.setViewpoint( new cVector3( 0.0f, 0.3f, -1.0f ), _border.Center); 
+                    value.setViewpoint(Player.Position, _border.Center);
 					//Always make some setViewpoint call simply to put in a default zoom.
 				    value.zoom( 0.35f ); //Wideangle 
 				    cListenerViewerRide prider = ( cListenerViewerRide )( value.Listener); 
-				    prider.Offset = (new cVector3( -1.5f, 0.0f, 1.0f)); /* This offset is in the coordinate
+				    prider.Offset = (new cVector3(5.0f, -10.0f, 0.0f)); /* This offset is in the coordinate
 				    system of the player, where the negative X axis is the negative of the
-				    player's tangent direction, which means stand right behind the player. */ 
+				    player's tangent direction, which means stand right behind the player. */
 			    } 
 			    else //Not riding the player.
 			    { 
@@ -606,7 +608,7 @@ namespace ACFramework
 			int modelcount = Biota.count( "cCritter3Dcharacter" ); 
 			int modelstoadd = _seedcount - modelcount; 
 			for ( int i = 0; i < modelstoadd; i++) 
-				new cCritter3Dcharacter( this ); 
+				new cCritterMinion( this ); 
 		// (3) Maybe check some other conditions.
 
             if (wentThrough && (Age - startNewRoom) > 2.0f)

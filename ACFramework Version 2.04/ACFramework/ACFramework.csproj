@@ -61,6 +61,9 @@
     </Compile>
     <Compile Include="ACView.cs" />
     <Compile Include="biota.cs" />
+    <Compile Include="cCritterMinion.cs" />
+    <Compile Include="cForceMinionMovement.cs" />
+    <Compile Include="cListenerAttackAndMove.cs" />
     <Compile Include="collider.cs" />
     <Compile Include="colorstyle.cs" />
     <Compile Include="critter.cs" />
