@@ -365,11 +365,6 @@ namespace ACFramework
             return pbullet; /* In case you want to overload cCritterArmed.shoot to do something else to 
 			the bullet. */
         }
-        public void explode()
-        {
-            Sprite = new cSpriteSphere(cCritter.BULLETRADIUS + 20.00f, 6, 6);
-            Sprite.FillColor = Color.Yellow;
-        }
     }
 
     class cCritterTreasure : cCritter

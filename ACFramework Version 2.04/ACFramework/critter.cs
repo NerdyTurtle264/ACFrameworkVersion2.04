@@ -264,7 +264,7 @@ namespace ACFramework
         public void explode()
         {
             Sprite = new cSpriteSphere(MAXRADIUS + 2000.00f, 6, 6);
-            Sprite.FillColor = Color.Yellow;
+           Sprite.FillColor = Color.Yellow;
         }
 
         /// <summary>
@@ -1442,7 +1442,11 @@ namespace ACFramework
         /// <summary>
         /// Can be overloaded to add dying behavior.  But should eventually produce a delete_me() call.
         /// </summary>
-        public virtual void die() { delete_me(); } 
+        public virtual void die() {
+            Sprite = new cSpriteSphere(10.0f, 32, 32);
+            Sprite.FillColor = Color.Yellow;
+            delete_me();
+        } 
         
         /// <summary>
         /// dieOfOldAge is called in the update method if(_usefixedlifetime && _age > _fixedlifetime).  

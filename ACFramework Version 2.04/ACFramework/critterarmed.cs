@@ -460,6 +460,7 @@ namespace ACFramework
     class cCritterBulletGrenade : cCritterBulletSilverMissile
     {
         cCritterArmed _pshooter;
+        public static readonly new float MAXSPEED = 22.0f; //Greater than cCritter::MAXSPEED. Currently 22.0.
 
         public cCritterBulletGrenade()
         {
