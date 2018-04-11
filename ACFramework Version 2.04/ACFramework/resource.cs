@@ -271,6 +271,7 @@ namespace ACFramework
         public static readonly int W = 19;
         public static readonly int S = 20;
         public static readonly int Z = 21;
+        public static readonly int Alt = 22;
 
         public static Key[] key;
 
@@ -297,7 +298,8 @@ namespace ACFramework
                 Key.A,
                 Key.W,
                 Key.S,
-                Key.Z
+                Key.Z,
+                Key.AltLeft
             };
 
         }

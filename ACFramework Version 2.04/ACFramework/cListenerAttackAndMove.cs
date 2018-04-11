@@ -31,25 +31,36 @@ namespace ACFramework
             {
                 pcritter.Velocity = new cVector3(0.0f, pcritter.Velocity.Y, 0.0f);
                 pcritter.Acceleration = new cVector3(0.0f, pcritter.Acceleration.Y, 0.0f);
+                pcritter.Sprite.ModelState = State.Idle;
                 return;
             }
 
+            if (up || down || right || left)
+                pcritter.Sprite.ModelState = State.Run;
+
             if (up)
-                pcritter.Velocity = new cVector3(-pcritter.MaxSpeed/2, pcritter.Velocity.Y, 0.0f);
-            if (down)
-                pcritter.Velocity = new cVector3(pcritter.MaxSpeed/2, pcritter.Velocity.Y, 0.0f);
+                pcritter.Velocity = new cVector3(-pcritter.MaxSpeed / 2, pcritter.Velocity.Y, pcritter.Velocity.Z);
+
+            else if (down)
+                pcritter.Velocity = new cVector3(pcritter.MaxSpeed / 2, pcritter.Velocity.Y, pcritter.Velocity.Z);
+            else {
+                pcritter.Velocity = new cVector3(0, pcritter.Velocity.Y, pcritter.Velocity.Z);
+                    }
             if (space && !_hopping)
             {
                 pcritter.Acceleration = new cVector3(0.0f, _hopStrength, 0.0f);
+                    pcritter.Sprite.ModelState = State.Jump;
                 _hopping = true;
             }
-                
-         //   if (pagedown)
-           //     pcritter.Velocity = new cVector3(0.0f, pcritter.MaxSpeed, 0.0f);
+
+            //   if (pagedown)
+            //     pcritter.Velocity = new cVector3(0.0f, pcritter.MaxSpeed, 0.0f);
             if (right)
-                pcritter.Velocity = new cVector3(0.0f, pcritter.Velocity.Y, -pcritter.MaxSpeed/2);
-            if (left)
-                pcritter.Velocity = new cVector3(0.0f, pcritter.Velocity.Y, pcritter.MaxSpeed/2);
+                pcritter.Velocity = new cVector3(pcritter.Velocity.X, pcritter.Velocity.Y, -pcritter.MaxSpeed / 2);
+            else if (left)
+                pcritter.Velocity = new cVector3(pcritter.Velocity.X, pcritter.Velocity.Y, pcritter.MaxSpeed / 2);
+            else
+                pcritter.Velocity = new cVector3(pcritter.Velocity.X, pcritter.Velocity.Y, 0);
 
             //Now match the attitude.
             if (pcritter.AttitudeToMotionLock)

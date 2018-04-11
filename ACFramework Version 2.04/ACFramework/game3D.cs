@@ -111,7 +111,7 @@ namespace ACFramework
         public override cCritterBullet shoot()
         {
             Framework.snd.play(Sound.LaserFire);
-            Sprite.ModelState = State.CrouchWeapon;
+            Sprite.setstate(State.Other, 75, 77, 0);
             return base.shoot();
         }
 
@@ -134,12 +134,12 @@ namespace ACFramework
 
             if (!shotDone) // if space key or left mouse button is pressed, turn off shooting until not preesed
                 _bshooting = false;
-            if (shotDone && (Framework.Leftclick))
+            if (shotDone && (Framework.Leftclick || Framework.Keydev[vk.Alt]))
             { // if previous shot is done, turn on shooting when space key or left mouse button is pressed
                 _bshooting = true;
                 shotDone = false;
             }
-            if (!shotDone && !timingAge && !Framework.Leftclick)
+            if (!shotDone && !timingAge && !Framework.Leftclick && !Framework.Keydev[vk.Alt])
             {
                 // space key and mouse button are both lifted, so wait a little
                 timingAge = true;
