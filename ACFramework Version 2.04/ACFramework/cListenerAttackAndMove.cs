@@ -49,7 +49,8 @@ namespace ACFramework
             if (space && !_hopping)
             {
                 pcritter.Acceleration = new cVector3(0.0f, _hopStrength, 0.0f);
-                    pcritter.Sprite.ModelState = State.Jump;
+                pcritter.Sprite.ModelState = State.Jump;
+                Framework.snd.play(Sound.Blink);
                 _hopping = true;
             }
 

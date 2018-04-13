@@ -96,13 +96,13 @@ namespace ACFramework
 	 with a Treasure is different, but we let the Treasure contol that collision. */ 
 			if ( playerhigherthancritter ) 
 			{
-                Framework.snd.play(Sound.Goopy); 
+                Framework.snd.play(Sound.Dissolve2); 
 				addScore( 10 ); 
 			} 
 			else 
 			{ 
 				damage( 1 );
-                Framework.snd.play(Sound.Crunch); 
+                Framework.snd.play(Sound.Dissolve); 
 			} 
 			pcritter.die(); 
 			return true; 
