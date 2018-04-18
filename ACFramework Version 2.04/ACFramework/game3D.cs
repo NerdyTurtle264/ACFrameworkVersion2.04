@@ -275,9 +275,101 @@ namespace ACFramework
                 return "cCritter3Dcharacter";
             }
         }
-	} 
-	
-	class cCritterTreasure : cCritter 
+	}
+
+    // Powerup class
+    // David O
+    // 4/4/18
+    //
+    //
+    class cCritter3Dpowerup : cCritter3Dcharacter
+    {
+
+        public cCritter3Dpowerup(cGame pownergame)
+            : base(pownergame)
+        {
+            clearForcelist();   //no movement for the powerup
+            Density = 2.0f;
+            MaxSpeed = 0.0f;
+            if (pownergame != null) //Just to be safe.
+                Sprite = new cSpriteQuake(Framework.models.selectRandomCritter()); //random at first
+            Sprite = new cSpriteQuake(ModelsMD2.CitrusFrog);                       //frog powerups for now
+            
+            if (Sprite.IsKindOf("cSpriteQuake")) //Don't let the figurines tumble.  
+            {
+                AttitudeToMotionLock = false;
+                Attitude = new cMatrix3(new cVector3(0.0f, 0.0f, 1.0f),
+                    new cVector3(1.0f, 0.0f, 0.0f),
+                    new cVector3(0.0f, 1.0f, 0.0f), Position);
+                /* Orient them so they are facing towards positive Z with heads towards Y. */
+            }
+            Bounciness = 0.0f; //Not 1.0 means it loses a bit of energy with each bounce.
+            setRadius(1.0f);
+            MinTwitchThresholdSpeed = 4.0f; //Means sprite doesn't switch direction unless it's moving fast 
+            randomizePosition(new cRealBox3(new cVector3(_movebox.Lox, _movebox.Loy, _movebox.Loz + 4.0f),
+                new cVector3(_movebox.Hix, _movebox.Loy, _movebox.Midz - 1.0f)));
+            moveTo(new cVector3(MoveBox.Hix/2, _movebox.Loy, MoveBox.Hiz/2));                            //move to origin for testing
+            
+            
+            
+
+            int begf = Framework.randomOb.random(0, 171);
+            int endf = Framework.randomOb.random(0, 171);
+
+            if (begf > endf)
+            {
+                int temp = begf;
+                begf = endf;
+                endf = temp;
+            }
+
+            Sprite.setstate(State.Other, begf, endf, StateType.Repeat);
+
+
+            _wrapflag = cCritter.BOUNCE;
+
+        }
+
+
+        public override void update(ACView pactiveview, float dt)                   //powerup update()
+        {                                                                           //pickup radius is forgiving by ~1 unit
+            base.update(pactiveview, dt); //Always call this first
+            if ((_outcode & cRealBox3.BOX_HIZ) != 0) /* use bitwise AND to check if a flag is set. */
+                delete_me(); //tell the game to remove yourself if you fall up to the hiz.
+            if (distanceTo(Player) < 2)
+            {
+                Player.addHealth(100);
+                Player.addScore(100);
+                die();
+            }
+        }
+
+        
+
+        // do a delete_me if you hit the left end 
+
+        public override void die()
+        {
+            Player.addScore(Value);
+            base.die();
+        }
+
+        public override bool IsKindOf(string str)
+        {
+            return str == "cCritter3Dpowerup" || base.IsKindOf(str);
+        }
+
+        public override string RuntimeClass
+        {
+            get
+            {
+                return "cCritter3Dpowerup";
+            }
+        }
+
+    }
+
+    class cCritterTreasure : cCritter 
 	{   // Try jumping through this hoop
 		
 		public cCritterTreasure( cGame pownergame ) : 
@@ -347,11 +439,13 @@ namespace ACFramework
 	class cGame3D : cGame 
 	{ 
 		public static readonly float TREASURERADIUS = 1.2f; 
-		public static readonly float WALLTHICKNESS = 0.5f; 
+		public static readonly float WALLTHICKNESS = 0.5f;
+        
 		public static readonly float PLAYERRADIUS = 1.0f; 
 		public static readonly float MAXPLAYERSPEED = 60.0f; 
-		private cCritterTreasure _ptreasure; 
-		private bool doorcollision;
+		private cCritterTreasure _ptreasure;            
+        private cCritter3Dpowerup _ppowerup;                        //powerup data member
+        private bool doorcollision;
         private bool wentThrough = false;
         private float startNewRoom;
 		
@@ -381,9 +475,15 @@ namespace ACFramework
 		
 			WrapFlag = cCritter.BOUNCE; 
 			_seedcount = 7; 
+
 			setPlayer( new cCritter3DPlayer( this ));
             Player.setMoveBox(skeleton);
 			_ptreasure = new cCritterTreasure( this ); 
+
+			setPlayer( new cCritter3DPlayer( this )); 
+			_ptreasure = new cCritterTreasure( this );
+            _ppowerup = new cCritter3Dpowerup(this);                //powerup
+
 		
 			/* In this world the x and y go left and up respectively, while z comes out of the screen.
 		A wall views its "thickness" as in the y direction, which is up here, and its
@@ -449,8 +549,10 @@ namespace ACFramework
                 _border.Hiy - Border.Loy,
                 this);
             Player.moveTo(new cVector3(_border.Lox, _border.Loy + 1.0f, _border.Loz + 3));
-        } 
-
+            //spawn the powerup
+            _ppowerup = new cCritter3Dpowerup(this);
+        }
+            
         public void setRoom1( )
         {
             Biota.purgeCritters("cCritter3Dcharacter");
@@ -501,9 +603,10 @@ namespace ACFramework
 			Biota.purgeCritters( "cCritter3Dcharacter" );
             for (int i = 0; i < _seedcount; i++) 
 				new cCritterMinion( this );
-            Player.moveTo(new cVector3(0.0f, Border.Loy, Border.Hiz - 3.0f)); 
-				/* We start at hiz and move towards	loz */ 
-		} 
+            Player.moveTo(new cVector3(0.0f, Border.Loy, Border.Hiz - 3.0f));
+            _ppowerup = new cCritter3Dpowerup(this);   //effin works i dunno why ////////////////////////////////// 
+                                                       /* We start at hiz and move towards	loz */
+        } 
 
 		
 		public void setdoorcollision( ) { doorcollision = true; } 
