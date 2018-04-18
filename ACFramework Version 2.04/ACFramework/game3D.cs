@@ -76,12 +76,6 @@ namespace ACFramework
         public override void update(ACView pactiveview, float dt)
         {
             base.update(pactiveview, dt); //Always call this first
-            if (!warningGiven && distanceTo(new cVector3(Game.Border.Lox, Game.Border.Loy,
-                Game.Border.Midz)) < 3.0f)
-            {
-                warningGiven = true;
-                MessageBox.Show("DON'T GO THROUGH THAT DOOR!!!  DON'T EVEN THINK ABOUT IT!!!");
-            }
  
         } 
 
@@ -102,13 +96,13 @@ namespace ACFramework
 	 with a Treasure is different, but we let the Treasure contol that collision. */ 
 			if ( playerhigherthancritter ) 
 			{
-                Framework.snd.play(Sound.Goopy); 
+                Framework.snd.play(Sound.Dissolve2); 
 				addScore( 10 ); 
 			} 
 			else 
 			{ 
 				damage( 1 );
-                Framework.snd.play(Sound.Crunch); 
+                Framework.snd.play(Sound.Dissolve); 
 			} 
 			pcritter.die(); 
 			return true; 
@@ -117,6 +111,7 @@ namespace ACFramework
         public override cCritterBullet shoot()
         {
             Framework.snd.play(Sound.LaserFire);
+            Sprite.setstate(State.Other, 75, 77, 0);
             return base.shoot();
         }
 
@@ -132,7 +127,38 @@ namespace ACFramework
                 return "cCritter3DPlayer";
             }
         }
-	} 
+
+        public override void feellistener(float dt)
+        {
+            base.feellistener(dt);  // will call cCritter feellistener
+
+            if (!shotDone) // if space key or left mouse button is pressed, turn off shooting until not preesed
+                _bshooting = false;
+            if (shotDone && (Framework.Leftclick || Framework.Keydev[vk.Alt]))
+            { // if previous shot is done, turn on shooting when space key or left mouse button is pressed
+                _bshooting = true;
+                shotDone = false;
+            }
+            if (!shotDone && !timingAge && !Framework.Leftclick && !Framework.Keydev[vk.Alt])
+            {
+                // space key and mouse button are both lifted, so wait a little
+                timingAge = true;
+                startTime = _age;
+            }
+
+            if (timingAge && (_age - startTime) > WAITSHOT)
+            // if you don't wait long enough, sounds can be distorted (problem with OpenAL)
+            {
+                timingAge = false;
+                shotDone = true;
+            }
+        }
+
+        public void MeleeAttack()
+        {
+            this.die();
+        }
+    } 
 	
    
 	class cCritter3DPlayerBullet : cCritterBullet 
@@ -196,7 +222,7 @@ namespace ACFramework
 			setRadius( 1.0f );
             MinTwitchThresholdSpeed = 4.0f; //Means sprite doesn't switch direction unless it's moving fast 
 			randomizePosition( new cRealBox3( new cVector3( _movebox.Lox, _movebox.Loy, _movebox.Loz + 4.0f), 
-				new cVector3( _movebox.Hix, _movebox.Loy, _movebox.Midz - 1.0f))); 
+				new cVector3( _movebox.Midx, _movebox.Loy, _movebox.Midz - 1.0f))); 
 				/* I put them ahead of the player  */ 
 			randomizeVelocity( 0.0f, 30.0f, false ); 
 
@@ -335,7 +361,7 @@ namespace ACFramework
 			_menuflags &= ~ cGame.MENU_BOUNCEWRAP; 
 			_menuflags |= cGame.MENU_HOPPER; //Turn on hopper listener option.
 			_spritetype = cGame.ST_MESHSKIN; 
-			setBorder( 64.0f, 16.0f, 64.0f ); // size of the world
+			setBorder( 64.0f, 16.0f, 512.0f ); // size of the world
             
 			cRealBox3 skeleton = new cRealBox3();
             skeleton.copy(_border);
@@ -393,28 +419,29 @@ namespace ACFramework
             cSpriteTextureBox stb = new cSpriteTextureBox(pwall.Skeleton, 
                 BitmapRes.Wood2, 2 );
             pwall.Sprite = stb;
-		
+		*/
 			cCritterDoor pdwall = new cCritterDoor( 
-				new cVector3( _border.Lox, _border.Loy, _border.Midz ), 
-				new cVector3( _border.Lox, _border.Midy - 3, _border.Midz ), 
-				0.1f, 2, this ); 
+				new cVector3( _border.Midx, _border.Loy, _border.Loz), 
+				new cVector3( _border.Midx, _border.Loy+6, _border.Loz ), 
+				0.5f, 3, this );
+            pdwall.roll((float)Math.PI/2);
+
 			cSpriteTextureBox pspritedoor = 
 				new cSpriteTextureBox( pdwall.Skeleton, BitmapRes.Door ); 
 			pdwall.Sprite = pspritedoor;
-            */
 
             //Will be the moving platform based off the extending wall and the ramp attached to it. 
             cCritterWall pwall = new cCritterWall(
-                new cVector3(_border.Midx, _border.Midy- 5.0f, zpos-2.0f),
-                new cVector3(_border.Midx, _border.Midy, zpos),
+                //adjusting the zpos here helps the platform to become level above the ground
+                new cVector3(_border.Midx, _border.Midy-5.0f, zpos-20.0f),
+                new cVector3(_border.Midx, _border.Midy-5.0f, zpos),
                 height,
                 wallthickness,
                 this);
 
             cSpriteTextureBox pspritebox = new cSpriteTextureBox(pwall.Skeleton, BitmapRes.Concrete, 5);
             pwall.Sprite = pspritebox;
-
-
+            
             cCritterWall invisWall = new cCritterInvisibleWall(
                 new cVector3(_border.Hix - 10, _border.Loy, _border.Hiz),
                 new cVector3(Border.Hix - 10, _border.Loy, _border.Loz),
@@ -426,35 +453,45 @@ namespace ACFramework
 
         public void setRoom1( )
         {
-            Biota.purgeCritters("cCritterWall");
             Biota.purgeCritters("cCritter3Dcharacter");
-            setBorder(10.0f, 15.0f, 10.0f); 
+            setBorder(64.0f, 16.0f, 512.0f); 
 	        cRealBox3 skeleton = new cRealBox3();
             skeleton.copy( _border );
 	        setSkyBox(skeleton);
 	        SkyBox.setAllSidesTexture( BitmapRes.Graphics1, 2 );
-	        SkyBox.setSideTexture( cRealBox3.LOY, BitmapRes.Concrete );
-	        SkyBox.setSideSolidColor( cRealBox3.HIY, Color.Blue );
-	        _seedcount = 0;
-	        Player.setMoveBox( new cRealBox3( 10.0f, 15.0f, 10.0f ) );
+	        SkyBox.setSideTexture( cRealBox3.LOY, BitmapRes.Graphics2, 8 );
+	        SkyBox.setSideTexture( cRealBox3.HIY, BitmapRes.Concrete, 8 );
+	       // _seedcount = 0;
+            Player.moveTo(new cVector3(0.0f, 0.0f, cRealBox3.HIZ));
             float zpos = 0.0f; /* Point on the z axis where we set down the wall.  0 would be center,
 			halfway down the hall, but we can offset it if we like. */
+            Player.moveTo(new cVector3(0.0f, 0.0f, cRealBox3.HIZ));
             float height = 0.1f * _border.YSize;
             float ycenter = -_border.YRadius + height / 2.0f;
             float wallthickness = cGame3D.WALLTHICKNESS;
-            cCritterWall pwall = new cCritterWall(
-                new cVector3(_border.Midx + 2.0f, ycenter, zpos),
-                new cVector3(_border.Hix, ycenter, zpos),
-                height, //thickness param for wall's dy which goes perpendicular to the 
-                //baseline established by the frist two args, up the screen 
-                wallthickness, //height argument for this wall's dz  goes into the screen 
-                this);
-            cSpriteTextureBox pspritebox =
-                new cSpriteTextureBox(pwall.Skeleton, BitmapRes.Wall3, 16); //Sets all sides 
-            /* We'll tile our sprites three times along the long sides, and on the
-        short ends, we'll only tile them once, so we reset these two. */
-            pwall.Sprite = pspritebox;
+
             wentThrough = true;
+            startNewRoom = Age;
+        }
+
+        public void setRoom2()
+        {
+            Biota.purgeCritters("cCritterDoor");
+            Biota.purgeCritters("cCritterWall");
+            Biota.purgeCritters("cCritterMinion");
+            setBorder(64.0f, 32.0f, 64.0f);
+
+            cRealBox3 skeleton = new cRealBox3();
+            skeleton.copy(_border);
+            setSkyBox(skeleton);
+            SkyBox.setAllSidesTexture(BitmapRes.Metal1);
+            SkyBox.setSideTexture(cRealBox3.LOY, BitmapRes.Metal1);
+            SkyBox.setSideTexture(cRealBox3.HIY, BitmapRes.Metal1);
+            _seedcount = 0;
+
+            Player.setMoveBox(skeleton);
+
+            Player.moveTo(new cVector3(0.0f, 0.0f, cRealBox3.HIZ));
             startNewRoom = Age;
         }
 		
@@ -531,16 +568,25 @@ namespace ACFramework
 				new cCritterMinion( this ); 
 		// (3) Maybe check some other conditions.
 
-            if (wentThrough && (Age - startNewRoom) > 2.0f)
+            /*if (wentThrough && (Age - startNewRoom) > 2.0f)
             {
                 MessageBox.Show("What an idiot.");
                 wentThrough = false;
-            }
+            }*/
 
             if (doorcollision == true)
             {
-                setRoom1();
-                doorcollision = false;
+                if (wentThrough)
+                {
+                    setRoom2();
+                    doorcollision = false;
+                    wentThrough = false;
+                }
+                else
+                {
+                    setRoom1();
+                    doorcollision = false;
+                }
             }
 		} 
 		

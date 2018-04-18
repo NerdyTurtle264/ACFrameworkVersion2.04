@@ -10,7 +10,7 @@ namespace ACFramework
         public cCritterMinion(cGame pOwnerGame) :base(pOwnerGame)
         {
             ForceList.Add(new cForceMinionMovement(pOwnerGame.Player));
-            Sprite = new cSpriteQuake(ModelsMD2.Robot);
+            Sprite = new cSpriteQuake(ModelsMD2.Hunter);
             Sprite.Radius = 1;
         }
 

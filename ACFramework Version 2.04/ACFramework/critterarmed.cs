@@ -989,7 +989,6 @@ namespace ACFramework
                 timingAge = false;
                 shotDone = true;
             }
-
        } 
 
         /// <summary>

@@ -18,37 +18,50 @@ namespace ACFramework
         {
             pcritter.Acceleration = new cVector3(0.0f, pcritter.Acceleration.Y, 0.0f);
 
-            bool left = Framework.Keydev[vk.Left];
-            bool right = Framework.Keydev[vk.Right];
-            bool up = Framework.Keydev[vk.Up];
-            bool down = Framework.Keydev[vk.Down];
-            bool pageup = Framework.Keydev[vk.PageUp];
+            bool left = Framework.Keydev[vk.A];
+            bool right = Framework.Keydev[vk.D];
+            bool up = Framework.Keydev[vk.W];
+            bool down = Framework.Keydev[vk.S];
+            bool space = Framework.Keydev[vk.Space];
             bool pagedown = Framework.Keydev[vk.PageDown];
+            bool lControl = Framework.Keydev[vk.ControlLeft];
 
 
-            if (!left && !right && !down && !up && !pagedown && !pageup)
+            if (!left && !right && !down && !up && !pagedown && !space && !lControl)
             {
                 pcritter.Velocity = new cVector3(0.0f, pcritter.Velocity.Y, 0.0f);
                 pcritter.Acceleration = new cVector3(0.0f, pcritter.Acceleration.Y, 0.0f);
+                pcritter.Sprite.ModelState = State.Idle;
                 return;
             }
 
+            if (up || down || right || left)
+                pcritter.Sprite.ModelState = State.Run;
+
             if (up)
-                pcritter.Velocity = new cVector3(-pcritter.MaxSpeed/2, pcritter.Velocity.Y, 0.0f);
-            if (down)
-                pcritter.Velocity = new cVector3(pcritter.MaxSpeed/2, pcritter.Velocity.Y, 0.0f);
-            if (pageup && !_hopping)
+                pcritter.Velocity = new cVector3(-pcritter.MaxSpeed / 2, pcritter.Velocity.Y, pcritter.Velocity.Z);
+
+            else if (down)
+                pcritter.Velocity = new cVector3(pcritter.MaxSpeed / 2, pcritter.Velocity.Y, pcritter.Velocity.Z);
+            else {
+                pcritter.Velocity = new cVector3(0, pcritter.Velocity.Y, pcritter.Velocity.Z);
+                    }
+            if (space && !_hopping)
             {
                 pcritter.Acceleration = new cVector3(0.0f, _hopStrength, 0.0f);
+                pcritter.Sprite.ModelState = State.Jump;
+                Framework.snd.play(Sound.Blink);
                 _hopping = true;
             }
-                
-         //   if (pagedown)
-           //     pcritter.Velocity = new cVector3(0.0f, pcritter.MaxSpeed, 0.0f);
+
+            //   if (pagedown)
+            //     pcritter.Velocity = new cVector3(0.0f, pcritter.MaxSpeed, 0.0f);
             if (right)
-                pcritter.Velocity = new cVector3(0.0f, pcritter.Velocity.Y, -pcritter.MaxSpeed/2);
-            if (left)
-                pcritter.Velocity = new cVector3(0.0f, pcritter.Velocity.Y, pcritter.MaxSpeed/2);
+                pcritter.Velocity = new cVector3(pcritter.Velocity.X, pcritter.Velocity.Y, -pcritter.MaxSpeed / 2);
+            else if (left)
+                pcritter.Velocity = new cVector3(pcritter.Velocity.X, pcritter.Velocity.Y, pcritter.MaxSpeed / 2);
+            else
+                pcritter.Velocity = new cVector3(pcritter.Velocity.X, pcritter.Velocity.Y, 0);
 
             //Now match the attitude.
             if (pcritter.AttitudeToMotionLock)
@@ -61,6 +74,15 @@ namespace ACFramework
             if (pcritter.Velocity.Y == 0)
             {
                 _hopping = false;
+            }
+
+            if (lControl)
+            {
+                if (pcritter.IsKindOf("cCritter3DPlayer"))
+                {
+                    cCritter3DPlayer player = (cCritter3DPlayer)pcritter;
+                    player.MeleeAttack();
+                }
             }
         }
         public override bool IsKindOf(string str)
