@@ -564,10 +564,16 @@ namespace ACFramework
 	        SkyBox.setSideTexture( cRealBox3.LOY, BitmapRes.Graphics2, 8 );
 	        SkyBox.setSideTexture( cRealBox3.HIY, BitmapRes.Concrete, 8 );
 	       // _seedcount = 0;
-            Player.moveTo(new cVector3(0.0f, 0.0f, cRealBox3.HIZ));
+            //Player.moveTo(new cVector3(0.0f, 0.0f, cRealBox3.HIZ));
             float zpos = 0.0f; /* Point on the z axis where we set down the wall.  0 would be center,
 			halfway down the hall, but we can offset it if we like. */
-            Player.moveTo(new cVector3(0.0f, 0.0f, cRealBox3.HIZ));
+            Player.moveTo(new cVector3(0, skeleton.Loy, skeleton.Hiz));
+            cCritterWall enteredDoor = new cCritterWall(new cVector3(_border.Midx, _border.Loy, _border.Hiz), new cVector3(_border.Midx, _border.Loy + 6, _border.Hiz),
+                0.5f, 3, this);
+            enteredDoor.Sprite = new cSpriteTextureBox(enteredDoor.Skeleton, BitmapRes.Door);
+            enteredDoor.roll((float)Math.PI / 2);
+
+            //Player.reset();
             float height = 0.1f * _border.YSize;
             float ycenter = -_border.YRadius + height / 2.0f;
             float wallthickness = cGame3D.WALLTHICKNESS;
