@@ -94,6 +94,7 @@ namespace ACFramework
         public static readonly int Blink = 6;
         public static readonly int Dissolve = 7;
         public static readonly int Dissolve2 = 8;
+        public static readonly int GlassBreaking = 9;
 
         private static readonly string[] sound = new string[] {
                 "pop.wav",
@@ -104,7 +105,8 @@ namespace ACFramework
                 "hallelujah.wav",
                 "blink.wav",
                 "dissolve.wav",
-                "dissolve2.wav"
+                "dissolve2.wav",
+                "glassbreaking.wav"
             };
 
         public Sound()

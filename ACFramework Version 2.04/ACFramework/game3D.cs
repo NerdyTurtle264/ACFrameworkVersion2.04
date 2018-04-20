@@ -80,32 +80,42 @@ namespace ACFramework
         } 
 
         public override bool collide( cCritter pcritter ) 
-		{ 
-			bool playerhigherthancritter = Position.Y - Radius > pcritter.Position.Y; 
-		/* If you are "higher" than the pcritter, as in jumping on it, you get a point
-	and the critter dies.  If you are lower than it, you lose health and the
-	critter also dies. To be higher, let's say your low point has to higher
-	than the critter's center. We compute playerhigherthancritter before the collide,
-	as collide can change the positions. */
-            _baseAccessControl = 1;
-			bool collided = base.collide( pcritter );
-            _baseAccessControl = 0;
-            if (!collided) 
-				return false;
-		/* If you're here, you collided.  We'll treat all the guys the same -- the collision
-	 with a Treasure is different, but we let the Treasure contol that collision. */ 
-			if ( playerhigherthancritter ) 
-			{
-                Framework.snd.play(Sound.Dissolve2); 
-				addScore( 10 ); 
-			} 
-			else 
-			{ 
-				damage( 1 );
-                Framework.snd.play(Sound.Dissolve); 
-			} 
-			pcritter.die(); 
-			return true; 
+		{
+            if (pcritter.IsKindOf("cCritterBoss"))
+            {
+                //_health--;
+                //moveTo(new cVector3(pcritter.Position.X, pcritter.Position.Y, pcritter.Position.Z + 50));
+                //Framework.snd.play(Sound.GlassBreaking);
+                return true;
+            }
+            else
+            {
+                bool playerhigherthancritter = Position.Y - Radius > pcritter.Position.Y;
+                /* If you are "higher" than the pcritter, as in jumping on it, you get a point
+            and the critter dies.  If you are lower than it, you lose health and the
+            critter also dies. To be higher, let's say your low point has to higher
+            than the critter's center. We compute playerhigherthancritter before the collide,
+            as collide can change the positions. */
+                _baseAccessControl = 1;
+                bool collided = base.collide(pcritter);
+                _baseAccessControl = 0;
+                if (!collided)
+                    return false;
+                /* If you're here, you collided.  We'll treat all the guys the same -- the collision
+             with a Treasure is different, but we let the Treasure contol that collision. */
+                if (playerhigherthancritter)
+                {
+                    Framework.snd.play(Sound.Dissolve2);
+                    addScore(10);
+                }
+                else
+                {
+                    damage(1);
+                    Framework.snd.play(Sound.Dissolve);
+                }
+                pcritter.die();
+                return true;
+            }
 		}
 
         public override cCritterBullet shoot()
@@ -601,6 +611,8 @@ namespace ACFramework
 
             Player.moveTo(new cVector3(0.0f, 0.0f, cRealBox3.HIZ));
             startNewRoom = Age;
+
+            new cCritterBoss(this);
         }
 		
 		public override void seedCritters() 
