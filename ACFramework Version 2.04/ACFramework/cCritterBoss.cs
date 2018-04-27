@@ -19,19 +19,30 @@ namespace ACFramework
             Target = Game.Player;
             AimToAttitudeLock = false;
             //copyMotionMatrixToAttitudeMatrix();
-            AttitudeToMotionLock = true;
+            AttitudeToMotionLock = false;
             BULLETRADIUS = 0.9f;
             setMoveBox(new cRealBox3(new cVector3(Game.Border.Lox, Game.Border.Loy, Game.Border.Loz + 3),
                                      new cVector3(Game.Border.Hix, Game.Border.Hiy, Game.Border.Hiz - 3)));
+
+            //set upright
+            rotateAttitude(new cSpin((float) Math.PI * 3f/2f, new cVector3(1,0,0)));
+            //set looking left
+            rotateAttitude(new cSpin((float)Math.PI *3f / 2f, new cVector3(0, 0, 1)));
         }
 
         public override void update(ACView pactiveview, float dt)
         {
             //base.update(pactiveview, dt);
-            aimAt(Target);
+
+            float varX;
+            float varY;
+            float varZ;
+            Framework.randomOb.randomUnitTriple(out varX, out varY, out varZ);
+            cVector3 aimingVariance = new cVector3(varX, varY, varZ);
+            aimingVariance.multassign(8);
+            aimAt(Target.Position.add(aimingVariance));
             shoot();
             feelforce();
-            //copyMotionMatrixToAttitudeMatrix();
         }
 
         public override bool IsKindOf(string str)
@@ -66,11 +77,15 @@ namespace ACFramework
         public override cVector3 force(cCritter pcritter)
         {
             timer++;
-            
+
             if (timer < 400)
+            {
                 return new cVector3(speed, 0, 0);
+            }
             else if (timer < 800)
+            {
                 return new cVector3(-speed, 0, 0);
+            }
             else
             {
                 timer = 0;
