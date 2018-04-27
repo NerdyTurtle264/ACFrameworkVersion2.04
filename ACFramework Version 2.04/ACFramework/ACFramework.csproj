@@ -68,6 +68,7 @@
     <Compile Include="colorstyle.cs" />
     <Compile Include="critter.cs" />
     <Compile Include="critterarmed.cs" />
+    <Compile Include="critterInvisibleWall.cs" />
     <Compile Include="critterviewer.cs" />
     <Compile Include="critterwall.cs" />
     <Compile Include="force.cs" />

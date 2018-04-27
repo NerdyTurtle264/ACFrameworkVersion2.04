@@ -45,10 +45,12 @@ namespace ACFramework
 	class cCritter3DPlayer : cCritterArmedPlayer 
 	{ 
         private bool warningGiven = false;
-		
+        private bool countingFrames = false;
+        private int frameCount = 0;
+
         public cCritter3DPlayer( cGame pownergame ) 
             : base( pownergame ) 
-		{ 
+		{
 			BulletClass = new cCritter3DPlayerBullet( );
             Sprite = new cSpriteQuake(ModelsMD2.TekkBlade); 
             //Sprite = new cSpriteSphere();
@@ -76,13 +78,20 @@ namespace ACFramework
         public override void update(ACView pactiveview, float dt)
         {
             base.update(pactiveview, dt); //Always call this first
-            if (!warningGiven && distanceTo(new cVector3(Game.Border.Lox, Game.Border.Loy,
-                Game.Border.Midz)) < 3.0f)
+                                          //Player.Sprite.setstate(    );
+
+            
+            //Here's where I added my chosen frame animation for step (6) ****************
+            //allows character to return to Running ( now idle on step (7) ) after getting knocked down
+            if (countingFrames)
+                frameCount++;
+            if (frameCount > 300)
             {
-                warningGiven = true;
-                MessageBox.Show("DON'T GO THROUGH THAT DOOR!!!  DON'T EVEN THINK ABOUT IT!!!");
+                countingFrames = false;
+                frameCount = 0;
+                Sprite.ModelState = State.Run;
             }
- 
+
         } 
 
         public override bool collide( cCritter pcritter ) 
@@ -117,6 +126,7 @@ namespace ACFramework
         public override cCritterBullet shoot()
         {
             Framework.snd.play(Sound.LaserFire);
+            Sprite.ModelState = State.CrouchWeapon;
             return base.shoot();
         }
 
@@ -132,7 +142,49 @@ namespace ACFramework
                 return "cCritter3DPlayer";
             }
         }
-	} 
+
+        public override void feellistener(float dt)
+        {
+            base.feellistener(dt);  // will call cCritter feellistener
+
+            if (!shotDone) // if space key or left mouse button is pressed, turn off shooting until not preesed
+                _bshooting = false;
+            if (shotDone && (Framework.Leftclick))
+            { // if previous shot is done, turn on shooting when space key or left mouse button is pressed
+                _bshooting = true;
+                shotDone = false;
+            }
+            if (!shotDone && !timingAge && !Framework.Leftclick)
+            {
+                // space key and mouse button are both lifted, so wait a little
+                timingAge = true;
+                startTime = _age;
+            }
+
+            if (timingAge && (_age - startTime) > WAITSHOT)
+            // if you don't wait long enough, sounds can be distorted (problem with OpenAL)
+            {
+                timingAge = false;
+                shotDone = true;
+            }
+        }  
+
+        public cCritterBulletMelee MeleeAttack()                                   // melee attack frames 72-84
+        {
+            //this.die();
+            cCritterBulletMelee pMeleeBullet = base.shootMelee();
+            pMeleeBullet.setRadius(0.0001f);                       //bullet is invisible and does not move, no attack animation yet
+            pMeleeBullet.MaxSpeed = 0;
+            pMeleeBullet.FixedLifetime = 1;
+            countingFrames = true;
+            Player.Sprite.setstate(State.Other, 72, 84, StateType.Hold);    //animation plays, but then breaks all animations afterwards
+
+            
+            
+            //pMeleeBullet.setMoveBox(new cRealBox3(Player.Position.X, Player.Position.Y, Player.Position.Z));
+            return pMeleeBullet;
+        }
+    } 
 	
    
 	class cCritter3DPlayerBullet : cCritterBullet 
@@ -196,7 +248,7 @@ namespace ACFramework
 			setRadius( 1.0f );
             MinTwitchThresholdSpeed = 4.0f; //Means sprite doesn't switch direction unless it's moving fast 
 			randomizePosition( new cRealBox3( new cVector3( _movebox.Lox, _movebox.Loy, _movebox.Loz + 4.0f), 
-				new cVector3( _movebox.Hix, _movebox.Loy, _movebox.Midz - 1.0f))); 
+				new cVector3( _movebox.Midx, _movebox.Loy, _movebox.Midz - 1.0f))); 
 				/* I put them ahead of the player  */ 
 			randomizeVelocity( 0.0f, 30.0f, false ); 
 
@@ -267,7 +319,7 @@ namespace ACFramework
             MaxSpeed = 0.0f;
             if (pownergame != null) //Just to be safe.
                 Sprite = new cSpriteQuake(Framework.models.selectRandomCritter()); //random at first
-            Sprite = new cSpriteQuake(ModelsMD2.CitrusFrog);                       //frog powerups for now
+            Sprite = new cSpriteQuake(ModelsMD2.UFO);                       //frog powerups for now  //try UFO model
             
             if (Sprite.IsKindOf("cSpriteQuake")) //Don't let the figurines tumble.  
             {
@@ -282,7 +334,7 @@ namespace ACFramework
             MinTwitchThresholdSpeed = 4.0f; //Means sprite doesn't switch direction unless it's moving fast 
             randomizePosition(new cRealBox3(new cVector3(_movebox.Lox, _movebox.Loy, _movebox.Loz + 4.0f),
                 new cVector3(_movebox.Hix, _movebox.Loy, _movebox.Midz - 1.0f)));
-            moveTo(new cVector3(MoveBox.Hix/2, _movebox.Loy, MoveBox.Hiz/2));                            //move to origin for testing
+            moveTo(new cVector3(MoveBox.Lox + 10, _movebox.Loy, MoveBox.Hiz/2));               //move to powerup location
             
             
             
@@ -310,10 +362,10 @@ namespace ACFramework
             base.update(pactiveview, dt); //Always call this first
             if ((_outcode & cRealBox3.BOX_HIZ) != 0) /* use bitwise AND to check if a flag is set. */
                 delete_me(); //tell the game to remove yourself if you fall up to the hiz.
-            if (distanceTo(Player) < 2)
+            if (distanceTo(Player) < 2) //here's where we put our "power up" effects
             {
-                Player.addHealth(100);
-                Player.addScore(100);
+                Player.addHealth(100);                                              //add health
+                Player.addScore(100);                                               //add score
                 die();
             }
         }
@@ -419,6 +471,7 @@ namespace ACFramework
 		public static readonly float MAXPLAYERSPEED = 60.0f; 
 		private cCritterTreasure _ptreasure;            
         private cCritter3Dpowerup _ppowerup;                        //powerup data member
+        private int _seedPowerupCount;
         private bool doorcollision;
         private bool wentThrough = false;
         private float startNewRoom;
@@ -429,8 +482,8 @@ namespace ACFramework
 			_menuflags &= ~ cGame.MENU_BOUNCEWRAP; 
 			_menuflags |= cGame.MENU_HOPPER; //Turn on hopper listener option.
 			_spritetype = cGame.ST_MESHSKIN; 
-			setBorder( 64.0f, 16.0f, 64.0f ); // size of the world
-		
+			setBorder( 64.0f, 16.0f, 512.0f ); // size of the world
+            
 			cRealBox3 skeleton = new cRealBox3();
             skeleton.copy(_border);
 			setSkyBox( skeleton );
@@ -448,21 +501,23 @@ namespace ACFramework
 			SkyBox.setSideTexture( cRealBox3.HIY, BitmapRes.Sky ); //ceiling 
 		
 			WrapFlag = cCritter.BOUNCE; 
-			_seedcount = 7; 
-			setPlayer( new cCritter3DPlayer( this )); 
-			_ptreasure = new cCritterTreasure( this );
+			_seedcount = 7;
+            _seedPowerupCount = 3;
+			setPlayer( new cCritter3DPlayer( this ));
+            Player.setMoveBox(skeleton);
+			_ptreasure = new cCritterTreasure( this ); 
             _ppowerup = new cCritter3Dpowerup(this);                //powerup//////////////
-		
-			/* In this world the x and y go left and up respectively, while z comes out of the screen.
+
+            /* In this world the x and y go left and up respectively, while z comes out of the screen.
 		A wall views its "thickness" as in the y direction, which is up here, and its
-		"height" as in the z direction, which is into the screen. */ 
-			//First draw a wall with dy height resting on the bottom of the world.
-			float zpos = 0.0f; /* Point on the z axis where we set down the wall.  0 would be center,
+		"height" as in the z direction, which is into the screen. */
+            //First draw a wall with dy height resting on the bottom of the world.
+            float zpos = 0.0f; /* Point on the z axis where we set down the wall.  0 would be center,
 			halfway down the hall, but we can offset it if we like. */ 
 			float height = 0.1f * _border.YSize; 
 			float ycenter = -_border.YRadius + height / 2.0f; 
 			float wallthickness = cGame3D.WALLTHICKNESS;
-            cCritterWall pwall = new cCritterWall( 
+           /* cCritterWall pwall = new cCritterWall( 
 				new cVector3( _border.Midx + 2.0f, ycenter, zpos ), 
 				new cVector3( _border.Hix, ycenter, zpos ), 
 				height, //thickness param for wall's dy which goes perpendicular to the 
@@ -473,12 +528,12 @@ namespace ACFramework
 				new cSpriteTextureBox( pwall.Skeleton, BitmapRes.Wall3, 16 ); //Sets all sides 
 				/* We'll tile our sprites three times along the long sides, and on the
 			short ends, we'll only tile them once, so we reset these two. */
-          pwall.Sprite = pspritebox; 
+          //pwall.Sprite = pspritebox; 
 		
 		
 			//Then draw a ramp to the top of the wall.  Scoot it over against the right wall.
 			float planckwidth = 0.75f * height; 
-			pwall = new cCritterWall( 
+			/*pwall = new cCritterWall( 
 				new cVector3( _border.Hix -planckwidth / 2.0f, _border.Loy, _border.Hiz - 2.0f), 
 				new cVector3( _border.Hix - planckwidth / 2.0f, _border.Loy + height, zpos ), 
 				planckwidth, //thickness param for wall's dy which is perpenedicualr to the baseline, 
@@ -488,52 +543,71 @@ namespace ACFramework
             cSpriteTextureBox stb = new cSpriteTextureBox(pwall.Skeleton, 
                 BitmapRes.Wood2, 2 );
             pwall.Sprite = stb;
-		
+		*/
 			cCritterDoor pdwall = new cCritterDoor( 
-				new cVector3( _border.Lox, _border.Loy, _border.Midz ), 
-				new cVector3( _border.Lox, _border.Midy - 3, _border.Midz ), 
-				0.1f, 2, this ); 
+				new cVector3( _border.Midx, _border.Loy, _border.Loz), 
+				new cVector3( _border.Midx, _border.Loy+6, _border.Loz ), 
+				0.5f, 3, this );
+            pdwall.roll((float)Math.PI/2);
+
 			cSpriteTextureBox pspritedoor = 
 				new cSpriteTextureBox( pdwall.Skeleton, BitmapRes.Door ); 
 			pdwall.Sprite = pspritedoor;
-
+            
+            cCritterWall invisWall = new cCritterInvisibleWall(
+                new cVector3(_border.Hix - 10, _border.Loy, _border.Hiz),
+                new cVector3(Border.Hix - 10, _border.Loy, _border.Loz),
+                planckwidth,
+                _border.Hiy - Border.Loy,
+                this);
+            Player.moveTo(new cVector3(_border.Lox, _border.Loy + 1.0f, _border.Loz + 3));
             ////////////////////////////////////////
             //spawn the powerup
             _ppowerup = new cCritter3Dpowerup(this);
-            
-		} 
+        } 
 
         public void setRoom1( )
         {
-            Biota.purgeCritters("cCritterWall");
             Biota.purgeCritters("cCritter3Dcharacter");
-            setBorder(10.0f, 15.0f, 10.0f); 
+            setBorder(64.0f, 16.0f, 512.0f); 
 	        cRealBox3 skeleton = new cRealBox3();
             skeleton.copy( _border );
 	        setSkyBox(skeleton);
 	        SkyBox.setAllSidesTexture( BitmapRes.Graphics1, 2 );
-	        SkyBox.setSideTexture( cRealBox3.LOY, BitmapRes.Concrete );
-	        SkyBox.setSideSolidColor( cRealBox3.HIY, Color.Blue );
-	        _seedcount = 0;
-	        Player.setMoveBox( new cRealBox3( 10.0f, 15.0f, 10.0f ) );
+	        SkyBox.setSideTexture( cRealBox3.LOY, BitmapRes.Graphics2, 8 );
+	        SkyBox.setSideTexture( cRealBox3.HIY, BitmapRes.Concrete, 8 );
+	       // _seedcount = 0;
+            Player.moveTo(new cVector3(0.0f, 0.0f, cRealBox3.HIZ));
             float zpos = 0.0f; /* Point on the z axis where we set down the wall.  0 would be center,
 			halfway down the hall, but we can offset it if we like. */
+            Player.moveTo(new cVector3(0.0f, 0.0f, cRealBox3.HIZ));
             float height = 0.1f * _border.YSize;
             float ycenter = -_border.YRadius + height / 2.0f;
             float wallthickness = cGame3D.WALLTHICKNESS;
-            cCritterWall pwall = new cCritterWall(
-                new cVector3(_border.Midx + 2.0f, ycenter, zpos),
-                new cVector3(_border.Hix, ycenter, zpos),
-                height, //thickness param for wall's dy which goes perpendicular to the 
-                //baseline established by the frist two args, up the screen 
-                wallthickness, //height argument for this wall's dz  goes into the screen 
-                this);
-            cSpriteTextureBox pspritebox =
-                new cSpriteTextureBox(pwall.Skeleton, BitmapRes.Wall3, 16); //Sets all sides 
-            /* We'll tile our sprites three times along the long sides, and on the
-        short ends, we'll only tile them once, so we reset these two. */
-            pwall.Sprite = pspritebox;
+
             wentThrough = true;
+            startNewRoom = Age;
+        }
+
+        public void setRoom2()
+        {
+            Biota.purgeCritters("cCritterDoor");
+            Biota.purgeCritters("cCritterWall");
+            Biota.purgeCritters("cCritterMinion");
+            setBorder(64.0f, 32.0f, 64.0f);
+
+            cRealBox3 skeleton = new cRealBox3();
+            skeleton.copy(_border);
+            setSkyBox(skeleton);
+            SkyBox.setAllSidesTexture(BitmapRes.Metal1);
+            SkyBox.setSideTexture(cRealBox3.LOY, BitmapRes.Metal1);
+            SkyBox.setSideTexture(cRealBox3.HIY, BitmapRes.Metal1);
+            _seedcount = 0;
+            _seedPowerupCount = 0;
+
+            Player.setMoveBox(skeleton);
+
+            Player.moveTo(new cVector3(0.0f, 0.0f, cRealBox3.HIZ));
             startNewRoom = Age;
         }
 		
@@ -544,9 +618,18 @@ namespace ACFramework
             for (int i = 0; i < _seedcount; i++) 
 				new cCritterMinion( this );
             Player.moveTo(new cVector3(0.0f, Border.Loy, Border.Hiz - 3.0f));
-            _ppowerup = new cCritter3Dpowerup(this);   //effin works i dunno why ////////////////////////////////// 
+            // _ppowerup = new cCritter3Dpowerup(this);   
+            seedPowerups();
                                                        /* We start at hiz and move towards	loz */
         } 
+
+        public void seedPowerups()
+        {
+            for (int i = 0; i < _seedPowerupCount; i++)
+            {
+                _ppowerup = new cCritter3Dpowerup(this);
+            }
+        }
 
 		
 		public void setdoorcollision( ) { doorcollision = true; } 
@@ -576,7 +659,7 @@ namespace ACFramework
 					//Always make some setViewpoint call simply to put in a default zoom.
 				    value.zoom( 0.35f ); //Wideangle 
 				    cListenerViewerRide prider = ( cListenerViewerRide )( value.Listener); 
-				    prider.Offset = (new cVector3(5.0f, -10.0f, 0.0f)); /* This offset is in the coordinate
+				    prider.Offset = (new cVector3(5.0f, -15.0f, 0.0f)); /* This offset is in the coordinate
 				    system of the player, where the negative X axis is the negative of the
 				    player's tangent direction, which means stand right behind the player. */
 			    } 
@@ -606,21 +689,30 @@ namespace ACFramework
 		// (2) Also don't let the the model count diminish.
 					//(need to recheck propcount in case we just called seedCritters).
 			int modelcount = Biota.count( "cCritter3Dcharacter" ); 
-			int modelstoadd = _seedcount - modelcount; 
+			int modelstoadd = _seedcount + _seedPowerupCount - modelcount;                                          // ?
 			for ( int i = 0; i < modelstoadd; i++) 
 				new cCritterMinion( this ); 
 		// (3) Maybe check some other conditions.
 
-            if (wentThrough && (Age - startNewRoom) > 2.0f)
+            /*if (wentThrough && (Age - startNewRoom) > 2.0f)
             {
                 MessageBox.Show("What an idiot.");
                 wentThrough = false;
-            }
+            }*/
 
             if (doorcollision == true)
             {
-                setRoom1();
-                doorcollision = false;
+                if (wentThrough)
+                {
+                    setRoom2();
+                    doorcollision = false;
+                    wentThrough = false;
+                }
+                else
+                {
+                    setRoom1();
+                    doorcollision = false;
+                }
             }
 		} 
 		

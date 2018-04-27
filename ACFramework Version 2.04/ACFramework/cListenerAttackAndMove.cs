@@ -9,24 +9,27 @@ namespace ACFramework
     {
         private float _hopStrength;
         private bool _hopping;
+        private bool _meleeAttacking;
 
         public cListenerAttackAndMove()
         {
             _hopStrength = 1000;
+            _meleeAttacking = false;
         }
         public override void listen(float dt, cCritter pcritter)
         {
             pcritter.Acceleration = new cVector3(0.0f, pcritter.Acceleration.Y, 0.0f);
 
-            bool left = Framework.Keydev[vk.Left];
-            bool right = Framework.Keydev[vk.Right];
-            bool up = Framework.Keydev[vk.Up];
-            bool down = Framework.Keydev[vk.Down];
-            bool pageup = Framework.Keydev[vk.PageUp];
+            bool left = Framework.Keydev[vk.A];
+            bool right = Framework.Keydev[vk.D];
+            bool up = Framework.Keydev[vk.W];
+            bool down = Framework.Keydev[vk.S];
+            bool space = Framework.Keydev[vk.Space];
             bool pagedown = Framework.Keydev[vk.PageDown];
+            bool lControl = Framework.Keydev[vk.ControlLeft];
 
 
-            if (!left && !right && !down && !up && !pagedown && !pageup)
+            if (!left && !right && !down && !up && !pagedown && !space && !lControl)
             {
                 pcritter.Velocity = new cVector3(0.0f, pcritter.Velocity.Y, 0.0f);
                 pcritter.Acceleration = new cVector3(0.0f, pcritter.Acceleration.Y, 0.0f);
@@ -37,7 +40,7 @@ namespace ACFramework
                 pcritter.Velocity = new cVector3(-pcritter.MaxSpeed/2, pcritter.Velocity.Y, 0.0f);
             if (down)
                 pcritter.Velocity = new cVector3(pcritter.MaxSpeed/2, pcritter.Velocity.Y, 0.0f);
-            if (pageup && !_hopping)
+            if (space && !_hopping)
             {
                 pcritter.Acceleration = new cVector3(0.0f, _hopStrength, 0.0f);
                 _hopping = true;
@@ -61,6 +64,17 @@ namespace ACFramework
             if (pcritter.Velocity.Y == 0)
             {
                 _hopping = false;
+            }
+
+            if (lControl)
+            {
+                if (pcritter.IsKindOf("cCritter3DPlayer"))
+                {
+                    _meleeAttacking = true;
+                    cCritter3DPlayer player = (cCritter3DPlayer)pcritter;
+                    player.MeleeAttack();
+                    _meleeAttacking = false;
+                }
             }
         }
         public override bool IsKindOf(string str)

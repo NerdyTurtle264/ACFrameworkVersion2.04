@@ -90,7 +90,8 @@ namespace ACFramework
         }
 
         /* Move element from its current array
-			position, to the head of the array, either in first position or (if there is an onscreen
+			position, to the 
+            of the array, either in first position or (if there is an onscreen
 			player in first position to second position).  We draw the cBiota in the draw last first
 			draw first last order, so that visually the first things in the array show up on top
 			or in front of the others.	Invoke with _servicerequest "move_to_front". */ 
