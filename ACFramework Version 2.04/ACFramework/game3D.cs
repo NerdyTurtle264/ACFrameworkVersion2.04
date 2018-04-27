@@ -95,32 +95,42 @@ namespace ACFramework
         } 
 
         public override bool collide( cCritter pcritter ) 
-		{ 
-			bool playerhigherthancritter = Position.Y - Radius > pcritter.Position.Y; 
-		/* If you are "higher" than the pcritter, as in jumping on it, you get a point
-	and the critter dies.  If you are lower than it, you lose health and the
-	critter also dies. To be higher, let's say your low point has to higher
-	than the critter's center. We compute playerhigherthancritter before the collide,
-	as collide can change the positions. */
-            _baseAccessControl = 1;
-			bool collided = base.collide( pcritter );
-            _baseAccessControl = 0;
-            if (!collided) 
-				return false;
-		/* If you're here, you collided.  We'll treat all the guys the same -- the collision
-	 with a Treasure is different, but we let the Treasure contol that collision. */ 
-			if ( playerhigherthancritter ) 
-			{
-                Framework.snd.play(Sound.Dissolve2); 
-				addScore( 10 ); 
-			} 
-			else 
-			{ 
-				damage( 1 );
-                Framework.snd.play(Sound.Dissolve); 
-			} 
-			pcritter.die(); 
-			return true; 
+		{
+            if (pcritter.IsKindOf("cCritterBoss"))
+            {
+                //_health--;
+                //moveTo(new cVector3(pcritter.Position.X, pcritter.Position.Y, pcritter.Position.Z + 50));
+                //Framework.snd.play(Sound.GlassBreaking);
+                return true;
+            }
+            else
+            {
+                bool playerhigherthancritter = Position.Y - Radius > pcritter.Position.Y;
+                /* If you are "higher" than the pcritter, as in jumping on it, you get a point
+            and the critter dies.  If you are lower than it, you lose health and the
+            critter also dies. To be higher, let's say your low point has to higher
+            than the critter's center. We compute playerhigherthancritter before the collide,
+            as collide can change the positions. */
+                _baseAccessControl = 1;
+                bool collided = base.collide(pcritter);
+                _baseAccessControl = 0;
+                if (!collided)
+                    return false;
+                /* If you're here, you collided.  We'll treat all the guys the same -- the collision
+             with a Treasure is different, but we let the Treasure contol that collision. */
+                if (playerhigherthancritter)
+                {
+                    Framework.snd.play(Sound.Dissolve2);
+                    addScore(10);
+                }
+                else
+                {
+                    damage(1);
+                    Framework.snd.play(Sound.Dissolve);
+                }
+                pcritter.die();
+                return true;
+            }
 		}
 
         public override cCritterBullet shoot()
@@ -458,62 +468,62 @@ namespace ACFramework
                 return "cCritterTreasure";
             }
         }
-	} 
-	
-	//======================cGame3D========================== 
-	
-	class cGame3D : cGame 
-	{ 
-		public static readonly float TREASURERADIUS = 1.2f; 
-		public static readonly float WALLTHICKNESS = 0.5f;
-        
-		public static readonly float PLAYERRADIUS = 1.0f; 
-		public static readonly float MAXPLAYERSPEED = 60.0f; 
-		private cCritterTreasure _ptreasure;            
+	}
+
+    //======================cGame3D========================== 
+
+    class cGame3D : cGame
+    {
+        public static readonly float TREASURERADIUS = 1.2f;
+        public static readonly float WALLTHICKNESS = 0.5f;
+
+        public static readonly float PLAYERRADIUS = 1.0f;
+        public static readonly float MAXPLAYERSPEED = 60.0f;
+        private cCritterTreasure _ptreasure;
         private cCritter3Dpowerup _ppowerup;                        //powerup data member
         private int _seedPowerupCount;
         private bool doorcollision;
         private bool wentThrough = false;
         private float startNewRoom;
-		
-		public cGame3D() 
-		{
-			doorcollision = false; 
-			_menuflags &= ~ cGame.MENU_BOUNCEWRAP; 
-			_menuflags |= cGame.MENU_HOPPER; //Turn on hopper listener option.
-			_spritetype = cGame.ST_MESHSKIN; 
-			setBorder( 64.0f, 16.0f, 512.0f ); // size of the world
-            
-			cRealBox3 skeleton = new cRealBox3();
+
+        public cGame3D()
+        {
+            doorcollision = false;
+            _menuflags &= ~cGame.MENU_BOUNCEWRAP;
+            _menuflags |= cGame.MENU_HOPPER; //Turn on hopper listener option.
+            _spritetype = cGame.ST_MESHSKIN;
+            setBorder(64.0f, 16.0f, 512.0f); // size of the world
+
+            cRealBox3 skeleton = new cRealBox3();
             skeleton.copy(_border);
-			setSkyBox( skeleton );
-		/* In this world the coordinates are screwed up to match the screwed up
-		listener that I use.  I should fix the listener and the coords.
-		Meanwhile...
-		I am flying into the screen from HIZ towards LOZ, and
-		LOX below and HIX above and
-		LOY on the right and HIY on the left. */ 
-			SkyBox.setSideSolidColor( cRealBox3.HIZ, Color.Aqua ); //Make the near HIZ transparent 
-			SkyBox.setSideSolidColor( cRealBox3.LOZ, Color.Aqua ); //Far wall 
-			SkyBox.setSideSolidColor( cRealBox3.LOX, Color.DarkOrchid ); //left wall 
-            SkyBox.setSideTexture( cRealBox3.HIX, BitmapRes.Wall2, 2 ); //right wall 
-			SkyBox.setSideTexture( cRealBox3.LOY, BitmapRes.Graphics3 ); //floor 
-			SkyBox.setSideTexture( cRealBox3.HIY, BitmapRes.Sky ); //ceiling 
-		
-			WrapFlag = cCritter.BOUNCE; 
+            setSkyBox(skeleton);
+            /* In this world the coordinates are screwed up to match the screwed up
+            listener that I use.  I should fix the listener and the coords.
+            Meanwhile...
+            I am flying into the screen from HIZ towards LOZ, and
+            LOX below and HIX above and
+            LOY on the right and HIY on the left. */
+            SkyBox.setSideSolidColor(cRealBox3.HIZ, Color.Aqua); //Make the near HIZ transparent 
+            SkyBox.setSideSolidColor(cRealBox3.LOZ, Color.Aqua); //Far wall 
+            SkyBox.setSideSolidColor(cRealBox3.LOX, Color.DarkOrchid); //left wall 
+            SkyBox.setSideTexture(cRealBox3.HIX, BitmapRes.Wall2, 2); //right wall 
+            SkyBox.setSideTexture(cRealBox3.LOY, BitmapRes.Graphics3); //floor 
+            SkyBox.setSideTexture(cRealBox3.HIY, BitmapRes.Sky); //ceiling 
 
-			_seedcount = 7; 
+            WrapFlag = cCritter.BOUNCE;
 
-			setPlayer( new cCritter3DPlayer( this ));
+            _seedcount = 7;
+
+            setPlayer(new cCritter3DPlayer(this));
             Player.setMoveBox(skeleton);
-			_ptreasure = new cCritterTreasure( this ); 
+            _ptreasure = new cCritterTreasure(this);
 
-			setPlayer( new cCritter3DPlayer( this )); 
-			_ptreasure = new cCritterTreasure( this );
+            setPlayer(new cCritter3DPlayer(this));
+            _ptreasure = new cCritterTreasure(this);
             _ppowerup = new cCritter3Dpowerup(this);                //powerup
 
-		
-			/* In this world the x and y go left and up respectively, while z comes out of the screen.
+
+            /* In this world the x and y go left and up respectively, while z comes out of the screen.
 =======
 			_seedcount = 7;
             _seedPowerupCount = 3;
@@ -528,10 +538,10 @@ namespace ACFramework
 		"height" as in the z direction, which is into the screen. */
             //First draw a wall with dy height resting on the bottom of the world.
             float zpos = 0.0f; /* Point on the z axis where we set down the wall.  0 would be center,
-			halfway down the hall, but we can offset it if we like. */ 
-			float height = 0.1f * _border.YSize; 
-			float ycenter = -_border.YRadius + height / 2.0f; 
-			float wallthickness = cGame3D.WALLTHICKNESS;
+			halfway down the hall, but we can offset it if we like. */
+            float height = 0.1f * _border.YSize;
+            float ycenter = -_border.YRadius + height / 2.0f;
+            float wallthickness = cGame3D.WALLTHICKNESS;
             /* cCritterWall pwall = new cCritterWall( 
                  new cVector3( _border.Midx + 2.0f, ycenter, zpos ), 
                  new cVector3( _border.Hix, ycenter, zpos ), 
@@ -545,8 +555,8 @@ namespace ACFramework
              short ends, we'll only tile them once, so we reset these two. */
             //pwall.Sprite = pspritebox; 
 
-			//Then draw a ramp to the top of the wall.  Scoot it over against the right wall.
-			float planckwidth = 0.75f * height;
+            //Then draw a ramp to the top of the wall.  Scoot it over against the right wall.
+            float planckwidth = 0.75f * height;
             /*pwall = new cCritterWall( 
 				new cVector3( _border.Hix -planckwidth / 2.0f, _border.Loy, _border.Hiz - 2.0f), 
 				new cVector3( _border.Hix - planckwidth / 2.0f, _border.Loy + height, zpos ), 
@@ -558,28 +568,28 @@ namespace ACFramework
                 BitmapRes.Wood2, 2 );
             pwall.Sprite = stb;
 		*/
-			cCritterDoor pdwall = new cCritterDoor( 
-				new cVector3( _border.Midx, _border.Loy, _border.Loz), 
-				new cVector3( _border.Midx, _border.Loy+6, _border.Loz ), 
-				0.5f, 3, this );
-            pdwall.roll((float)Math.PI/2);
+            cCritterDoor pdwall = new cCritterDoor(
+                new cVector3(_border.Midx, _border.Loy, _border.Loz),
+                new cVector3(_border.Midx, _border.Loy + 6, _border.Loz),
+                0.5f, 3, this);
+            pdwall.roll((float)Math.PI / 2);
 
-			cSpriteTextureBox pspritedoor = 
-				new cSpriteTextureBox( pdwall.Skeleton, BitmapRes.Door ); 
-			pdwall.Sprite = pspritedoor;
+            cSpriteTextureBox pspritedoor =
+                new cSpriteTextureBox(pdwall.Skeleton, BitmapRes.Door);
+            pdwall.Sprite = pspritedoor;
 
             //Will be the moving platform based off the extending wall and the ramp attached to it. 
             cCritterWall pwall = new cCritterWall(
                 //adjusting the zpos here helps the platform to become level above the ground
-                new cVector3(_border.Midx, _border.Midy-5.0f, zpos-20.0f),
-                new cVector3(_border.Midx, _border.Midy-5.0f, zpos),
+                new cVector3(_border.Midx, _border.Midy - 5.0f, zpos - 20.0f),
+                new cVector3(_border.Midx, _border.Midy - 5.0f, zpos),
                 height,
                 wallthickness,
                 this);
 
             cSpriteTextureBox pspritebox = new cSpriteTextureBox(pwall.Skeleton, BitmapRes.Concrete, 5);
             pwall.Sprite = pspritebox;
-            
+
             cCritterWall invisWall = new cCritterInvisibleWall(
                 new cVector3(_border.Hix - 10, _border.Loy, _border.Hiz),
                 new cVector3(Border.Hix - 10, _border.Loy, _border.Loz),
@@ -592,17 +602,17 @@ namespace ACFramework
             _ppowerup = new cCritter3Dpowerup(this);
         }
 
-        public void setRoom1( )
+        public void setRoom1()
         {
             Biota.purgeCritters("cCritter3Dcharacter");
-            setBorder(64.0f, 16.0f, 512.0f); 
-	        cRealBox3 skeleton = new cRealBox3();
-            skeleton.copy( _border );
-	        setSkyBox(skeleton);
-	        SkyBox.setAllSidesTexture( BitmapRes.Graphics1, 2 );
-	        SkyBox.setSideTexture( cRealBox3.LOY, BitmapRes.Graphics2, 8 );
-	        SkyBox.setSideTexture( cRealBox3.HIY, BitmapRes.Concrete, 8 );
-	       // _seedcount = 0;
+            setBorder(64.0f, 16.0f, 512.0f);
+            cRealBox3 skeleton = new cRealBox3();
+            skeleton.copy(_border);
+            setSkyBox(skeleton);
+            SkyBox.setAllSidesTexture(BitmapRes.Graphics1, 2);
+            SkyBox.setSideTexture(cRealBox3.LOY, BitmapRes.Graphics2, 8);
+            SkyBox.setSideTexture(cRealBox3.HIY, BitmapRes.Concrete, 8);
+            // _seedcount = 0;
             //Player.moveTo(new cVector3(0.0f, 0.0f, cRealBox3.HIZ));
             float zpos = 0.0f; /* Point on the z axis where we set down the wall.  0 would be center,
 			halfway down the hall, but we can offset it if we like. */
@@ -641,19 +651,21 @@ namespace ACFramework
 
             Player.moveTo(new cVector3(0.0f, 0.0f, cRealBox3.HIZ));
             startNewRoom = Age;
+
+            //new cCritterBoss(this);
         }
-		
-		public override void seedCritters() 
-		{
-			Biota.purgeCritters( "cCritterBullet" ); 
-			Biota.purgeCritters( "cCritter3Dcharacter" );
-            for (int i = 0; i < _seedcount; i++) 
-				new cCritterMinion( this );
+
+        public override void seedCritters()
+        {
+            Biota.purgeCritters("cCritterBullet");
+            Biota.purgeCritters("cCritter3Dcharacter");
+            for (int i = 0; i < _seedcount; i++)
+                new cCritterMinion(this);
             Player.moveTo(new cVector3(0.0f, Border.Loy, Border.Hiz - 3.0f));
             // _ppowerup = new cCritter3Dpowerup(this);   
             seedPowerups();
-                                                       /* We start at hiz and move towards	loz */
-        } 
+            /* We start at hiz and move towards	loz */
+        }
 
         public void seedPowerups()
         {
@@ -662,6 +674,7 @@ namespace ACFramework
                 _ppowerup = new cCritter3Dpowerup(this);
             }
         }
+    	 
 
 		
 		public void setdoorcollision( ) { doorcollision = true; } 
