@@ -9,10 +9,12 @@ namespace ACFramework
     {
         private float _hopStrength;
         private bool _hopping;
+        private bool _meleeAttacking;
 
         public cListenerAttackAndMove()
         {
             _hopStrength = 1000;
+            _meleeAttacking = false;
         }
         public override void listen(float dt, cCritter pcritter)
         {
@@ -80,8 +82,10 @@ namespace ACFramework
             {
                 if (pcritter.IsKindOf("cCritter3DPlayer"))
                 {
+                    _meleeAttacking = true;
                     cCritter3DPlayer player = (cCritter3DPlayer)pcritter;
                     player.MeleeAttack();
+                    _meleeAttacking = false;
                 }
             }
         }
