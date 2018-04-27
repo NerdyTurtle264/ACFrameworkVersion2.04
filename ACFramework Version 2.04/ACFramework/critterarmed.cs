@@ -52,11 +52,21 @@ namespace ACFramework
         {
             return new cCritterBullet();
         }
+        /// <summary>
+        /// Use to create and return another bullet object.  This is a virtual function, so if you are possibly
+        /// using a derived object with a base class name, it will return a bullet of the type of the derived
+        /// object.
+        /// </summary>
+        /// <returns></returns>
+        public virtual cCritterBulletMelee CreateMelee()
+        {
+            return new cCritterBulletMelee();
+        }
 
-		/// <summary>
-		/// Calls cCritter.destruct and then removes the bullet from the shooter
-		/// </summary>
-		public override void destruct() 
+        /// <summary>
+        /// Calls cCritter.destruct and then removes the bullet from the shooter
+        /// </summary>
+        public override void destruct() 
 		{
             base.destruct();
 			if ( _pshooter != null ) /* The cCritteArmed destructor sets _pshooter to NULL in its destrucor.  So if
@@ -223,8 +233,227 @@ namespace ACFramework
 
 
     } 
-	
-	class cCritterBulletRubber : cCritterBullet 
+    /// <summary>
+    /// //////////////////////////////////////////////////////////////////////////
+    /// Set speed to 0
+    /// Set only player can pick up
+    /// Increase HP on pickup
+    /// </summary>
+    class cCritterBulletMelee : cCritterBullet         
+    {
+        public static readonly new float FIXEDLIFETIME = 3.0f; //Life in seconds before spontaneous decay, currently 3.0.
+        public static readonly new float MAXSPEED = 22.0f; //Greater than cCritter::MAXSPEED. Currently 22.0.
+        cCritterArmed _pshooter;
+        //Nonserialized pointer ref.
+
+        public cCritterBulletMelee()
+        {
+            _pshooter = null;
+            _shooterindex = cBiota.NOINDEX;
+            _hitstrength = 1;
+            _dieatedges = true;                              
+            _defaultprismdz = cSprite.BULLETPRISMDZ;
+            _value = 0;
+            _usefixedlifetime = true;
+            _fixedlifetime = FIXEDLIFETIME;
+            _collidepriority = cCollider.CP_BULLET; /* Don't use the setCollidePriority mutator, as that
+			forces a call to pgame()->buildCollider(); */
+            _maxspeed = cCritterBulletMelee.MAXSPEED;
+            Speed = cCritterBulletMelee.BULLETSPEED;
+            cSpriteSphere bulletsprite = new cSpriteSphere(cCritter.BULLETRADIUS, 6, 6);
+            bulletsprite.FillColor = Color.FromArgb(255, 0, 0, 0);  //need to make invisible
+            Sprite = bulletsprite; /* Also sets cSprite._prismdz to cCritter._defaultprismdz, which we
+			set to CritterWall.BULLETPRISMDZ above. */
+        }
+
+        /// <summary>
+        /// Use to create and return another bullet object.  This is a virtual function, so if you are possibly
+        /// using a derived object with a base class name, it will return a bullet of the type of the derived
+        /// object.
+        /// </summary>
+        /// <returns></returns>
+        public virtual new cCritterBulletMelee Create()
+        {
+            return new cCritterBulletMelee();
+        }
+
+        /// <summary>
+        /// Calls cCritter.destruct and then removes the bullet from the shooter
+        /// </summary>
+        public override void destruct()
+        {
+            base.destruct();
+            if (_pshooter != null) /* The cCritteArmed destructor sets _pshooter to NULL in its destrucor.  So if
+							_pshooter isn't NULL, then it's still a good pointer. */
+                _pshooter.removeBullet(this);
+        }
+
+        /// <summary>
+        /// Orients the bullet so that it has the same attitude as the shooter, and sets the Tangent of the bullet.
+        /// The Target and WrapFlag of the bullet is set to that of the shooter.  The bullet is also set to its 
+        /// starting position.
+        /// </summary>
+        /// <param name="pshooter">The shooter of this bullet.</param>
+        public virtual void initialize(cCritterArmed pshooter)
+        {
+            _pshooter = pshooter;
+            setMoveBox(_pshooter.OwnerBiota.border()); /* Be sure to call setMoveBox before setVelocity,
+			as setVelocity generates a call to fixNormalAndBinormal which looks at _movebox to see
+			if it's ok if you happen to have a 3D velocity. */
+            DragBox = _pshooter.OwnerBiota.border();
+            Attitude = _pshooter.Attitude; //Orient the bullet like the shooter, fix position below.
+            Tangent = _pshooter.AimVector; /* This call uses the _bulletspeed set by the
+				cBullet constructor and the direction of the aim.  We choose NOT to add 
+				_pshooter->velocity() to the new velocity. */
+            setTarget(_pshooter.Target);
+            WrapFlag = _pshooter.WrapFlag;
+            cVector3 start = _pshooter.Position; //position() 
+                                                 /* I want to start the bullet out at the tip of the gun, with the provision
+                                                 that in any case I will I start it out far enough so that it's not touching
+                                                 the shooter. */
+            float bulletdistance1 = _pshooter.GunLength * _pshooter.Radius;
+            float bulletdistance2 = pshooter.Radius + 40.5f * BULLETRADIUS; /* Need the 1.5 for enough
+			room. Otherwise when the simulation is slow you may still touch. */
+            float bulletdistance = (bulletdistance1 > bulletdistance2) ? bulletdistance1
+                : bulletdistance2;
+            cVector3 end = start.add(_pshooter.AimVector.mult(bulletdistance));
+            moveTo(end); //Do this instead of just setting _position so as to fix wrapposition 
+        }
+
+
+        //Accessor 
+
+        /// <summary>
+        /// Don't call this; it should only be called by cCritterArmed.destruct
+        /// </summary>
+        public void nullTheShooter() { _pshooter = null; }
+        //Overloaded methods 
+
+        /// <summary>
+        /// Override to update the bullet the way that you want to.  
+        /// </summary>
+        /// <param name="pactiveview">This argument could be useful if you are using cListenerCursor.</param>
+        /// <param name="dt">The change in time between frame updates.  Might be useful if an update should not occur until a specified
+        /// amount of time has elapsed.</param>
+        public override void update(ACView pactiveview, float dt)
+        {
+            base.update(pactiveview, dt); /* Feels force, also checks _age against _lifetime. */
+            if (_baseAccessControl == 1)
+                return;
+            if ((_outcode != 0) && _dieatedges) /* _outcode nonzero means near an edge.  This keeps bullets
+			from bouncing or wrapping,	but it also makes the critters unable tofire when they are 
+			really near an edge. */
+            {
+                delete_me();
+                return;
+            }
+        }
+
+        /// <summary>
+        /// The purpose of this function is to ignore colliding with bullets from the same shooter.  If the shooter
+        /// is dead (null), it will also ignore bullet collisions from other dead shooters.  Also, will not let a bullet from
+        /// a shooter bump into the shooter.
+        /// </summary>
+        /// <param name="pcritter">The critter this bullet is bumping into.</param>
+        /// <returns></returns>
+        public override int collidesWith(cCritter pcritter)
+        {
+            if (pcritter.IsKindOf("cCritterBullet") &&
+                ((cCritterBullet)pcritter).Shooter == _pshooter) // Can be NULL 
+                return cCollider.DONTCOLLIDE;
+            //Don't bump into your shooter.
+            if (pcritter == _pshooter)
+                return cCollider.DONTCOLLIDE;
+            return base.collidesWith(pcritter);
+        }
+
+        /// <summary>
+        /// This function checks if it has hit a target.  If it has, the damage function is called on the target,
+        /// and the bullet dies.  The hit score is returned from the damage function and added to the shooter's 
+        /// score using addScore.
+        /// </summary>
+        /// <param name="pcritter">The critter being tested for the bullet's target.</param>
+        /// <returns></returns>
+        public override bool collide(cCritter pcritter)
+        {
+            //If you hit a target, damage it and die.
+            if (_baseAccessControl == 1)
+                return base.collide(pcritter);
+            if (isTarget(pcritter))
+            {
+                if (!touch(pcritter))
+                    return false;
+                int hitscore = pcritter.damage(_hitstrength);
+                delete_me(); //Makes a service request, but you won't go away yet.
+                if (_pshooter != null) //Possible that _pshooter has died, is NULL.
+                    _pshooter.addScore(hitscore);
+                return true;
+            }
+            //Bounce off or everything else.
+            return base.collide(pcritter); //Bounce off non-target critters 
+        }
+
+
+        //Special methods 
+
+        /// <summary>
+        /// Returns true if the critter passed in is not a cCritterWall.  Returns false if it is a cCritterWall.
+        /// Note that it will return true if the critter passed in is a derived class of cCritterWall, which might
+        /// be useful in some situations -- shooting out of a cage, for example.  If you don't want that, you can
+        /// modify this function using IsKindOf for the cCritterWall.  Note also that damage will not be done if
+        /// the bullet hits the shooter that shot it, or hits bullets of the same class as the shooter's bullets.
+        /// </summary>
+        /// <param name="pcritter">The critter being tested for a wall.</param>
+        /// <returns></returns>
+        public virtual bool isTarget(cCritter pcritter)
+        {
+            if (pcritter.RuntimeClass == "cCritterWall")
+                return false;
+            return true;
+        }
+
+        /// <summary>
+        /// Tests to see if this critter is any kind of class derived from the base class being used.  
+        /// If you would like to see if this critter is any kind of bullet, for example,
+        /// you would pass in the string for the class name "cCritterBullet".  If will return true if is a
+        /// cCritterBullet object or any object of a class derived from cCritterBullet.
+        /// </summary>
+        /// <param name="str">The class name to test.</param>
+        /// <returns>Returns true if this critter is a kind of the class, and false otherwise.</returns>
+        public override bool IsKindOf(string str)
+        {
+            return str == "cCritterBullet" || base.IsKindOf(str);
+        }
+
+        /// <summary>
+        /// Has only a get compponent to return the shooter of this bullet.
+        /// </summary>
+		public virtual cCritterArmed Shooter
+        {
+            get
+            { return _pshooter; }
+        }
+
+        /// <summary>
+        /// Gets the name of this class as a string -- useful for polymorphism
+        /// </summary>
+        public override string RuntimeClass
+        {
+            get
+            {
+                return "cCritterBullet";
+            }
+        }
+
+
+    }
+    /// <summary>
+    /// //////////////////////////////////////////////////////////////////////////
+    /// </summary>
+    /// 
+
+
+    class cCritterBulletRubber : cCritterBullet 
 	{ 
 		public static readonly new bool DIEATEDGES = false; //If TRUE they disappear at edges, no bounce or wrap.
 		public static readonly new float DENSITY = 100.0f; 
@@ -643,30 +872,53 @@ namespace ACFramework
 			base.animate( dt ); //Calls updateAttitude(dt) and _psprite->animate(dt) 
 			if ( _aimtoattitudelock ) 
 				AimVector = AttitudeTangent.roundOff(); 
-		} 
+		}
 
         /// <summary>
         /// Creates a bullet, initializes it, adds it to the list of critters, and adds it to the bullet list.
         /// It is returned in case the shooter wants to do anything else with it.
         /// </summary>
         /// <returns></returns>
-		public virtual cCritterBullet shoot() 
-		{ 
-            cCritterBullet pbullet = _pbulletclass.Create(); 
-			pbullet.initialize( this ); 
-			pbullet.Sprite.LineColor = Sprite.LineColor;
-			pbullet.add_me( _pownerbiota ); /* Makes a servicerequest to be handled by cBiota later. I used to
+        public virtual cCritterBullet shoot()
+        {
+            cCritterBullet pbullet = _pbulletclass.Create();
+            pbullet.initialize(this);
+            pbullet.Sprite.LineColor = Sprite.LineColor;
+            pbullet.add_me(_pownerbiota); /* Makes a servicerequest to be handled by cBiota later. I used to
 				have _pownerbiota.Add(pbullet) here, but this makes a problem if I do
 				USEMETRIC; this is because _metric expects the critter's indices to stay fixed.
 				In general, I should not be adding or deleting any critters except
 				in the cBiota.processervicerequests call. Note that you have the default
 				FALSE value of the immediateadd argument to add_me, meaning you don't
 				add in this critter to the simulator cBiota until it finishes its current
-				update loop and has a chance to call processServiceRequests. */ 
-			_bulletlist.Add( pbullet ); //Adds to end of my personal bullet-data array.
-			return pbullet; /* In case you want to overload cCritterArmed.shoot to do something else to 
-			the bullet. */ 
-		}
+				update loop and has a chance to call processServiceRequests. */
+            _bulletlist.Add(pbullet); //Adds to end of my personal bullet-data array.
+            return pbullet; /* In case you want to overload cCritterArmed.shoot to do something else to 
+			the bullet. */
+        }
+
+        /// <summary>
+        /// Creates a bullet, initializes it, adds it to the list of critters, and adds it to the bullet list.
+        /// It is returned in case the shooter wants to do anything else with it.
+        /// </summary>
+        /// <returns></returns>
+		public virtual cCritterBulletMelee shootMelee()
+        {
+            cCritterBulletMelee pbullet = _pbulletclass.CreateMelee();
+            pbullet.initialize(this);
+            pbullet.Sprite.LineColor = Sprite.LineColor;
+            pbullet.add_me(_pownerbiota); /* Makes a servicerequest to be handled by cBiota later. I used to
+				have _pownerbiota.Add(pbullet) here, but this makes a problem if I do
+				USEMETRIC; this is because _metric expects the critter's indices to stay fixed.
+				In general, I should not be adding or deleting any critters except
+				in the cBiota.processervicerequests call. Note that you have the default
+				FALSE value of the immediateadd argument to add_me, meaning you don't
+				add in this critter to the simulator cBiota until it finishes its current
+				update loop and has a chance to call processServiceRequests. */
+            _bulletlist.Add(pbullet); //Adds to end of my personal bullet-data array.
+            return pbullet; /* In case you want to overload cCritterArmed.shoot to do something else to 
+			the bullet. */
+        }
 
         /// <summary>
         /// Tests to see if this critter is any kind of class derived from the base class being used.  
@@ -1027,23 +1279,38 @@ namespace ACFramework
         public override void draw( cGraphics pgraphics, int drawflags = 0 ) 
 		{ 
 			base.draw( pgraphics, drawflags ); 
-		} 
+		}
 
         /// <summary>
         /// Standard shoot function, but adds the player's velocity to the bullet because otherwise if
         /// you're moving forward, the bullets pile up.
         /// </summary>
         /// <returns></returns>
-        public override cCritterBullet shoot() 
-		{ 
-			cCritterBullet pbullet = base.shoot(); 
-		/* I used to just have 
-		pbullet->addVelocity(_velocity), but this gives unattractive results. */ 
-			float bulletspeedup = _velocity.mod( pbullet.Tangent ); 
-			if ( bulletspeedup > 0.0f ) 
-				pbullet.addVelocity( pbullet.Tangent.mult( bulletspeedup )); //So bullets don't stack up.
-			return pbullet; 
-		}
+        public override cCritterBullet shoot()
+        {
+            cCritterBullet pbullet = base.shoot();
+            /* I used to just have 
+            pbullet->addVelocity(_velocity), but this gives unattractive results. */
+            float bulletspeedup = _velocity.mod(pbullet.Tangent);
+            if (bulletspeedup > 0.0f)
+                pbullet.addVelocity(pbullet.Tangent.mult(bulletspeedup)); //So bullets don't stack up.
+            return pbullet;
+        }
+        /// <summary>
+        /// Standard shoot function, but adds the player's velocity to the bullet because otherwise if
+        /// you're moving forward, the bullets pile up.
+        /// </summary>
+        /// <returns></returns>
+        public override cCritterBulletMelee shootMelee()
+        {
+            cCritterBulletMelee pbullet = base.shootMelee();
+            /* I used to just have 
+            pbullet->addVelocity(_velocity), but this gives unattractive results. */
+            float bulletspeedup = _velocity.mod(pbullet.Tangent);
+            if (bulletspeedup > 0.0f)
+                pbullet.addVelocity(pbullet.Tangent.mult(bulletspeedup)); //So bullets don't stack up.
+            return pbullet;
+        }
 
         /// <summary>
         /// Tests to see if this critter is any kind of class derived from the base class being used.  

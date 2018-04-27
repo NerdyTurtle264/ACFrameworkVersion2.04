@@ -357,7 +357,8 @@ namespace ACFramework
         public static readonly int CitrusFrog = 4;
         public static readonly int TekkBlade = 5;
         public static readonly int Hunter = 6;
-        public static readonly int Eva01 = 7;
+        public static readonly int UFO = 7;
+        public static readonly int Eva01 = 8;
 
         // at least one must be set true
         private static readonly ModelsMD2Info[] minfo = {
@@ -368,6 +369,7 @@ namespace ACFramework
             new ModelsMD2Info( "citrusfrog", "BigRed.pcx", 0.3f, true ),
             new ModelsMD2Info( "Tekk-blade", "blade_black.pcx", 0.3f, false),
             new ModelsMD2Info( "Hunter", "darkhunter.pcx", 0.3f, false),
+            new ModelsMD2Info( "UFO", "green.pcx", 0.3f, false),
             new ModelsMD2Info( "EVA-01", "Eva-01.pcx", 0.0f, false)
         };            
 
