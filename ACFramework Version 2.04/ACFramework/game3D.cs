@@ -485,6 +485,9 @@ namespace ACFramework
         private bool doorcollision;
         private bool wentThrough = false;
         private float startNewRoom;
+
+        private cCritterBoss boss;
+        private bool bossActive;
 		
 		public cGame3D() 
 		{
@@ -567,12 +570,14 @@ namespace ACFramework
                 new cVector3(_border.Hix - 10, _border.Loy, _border.Hiz),
                 new cVector3(Border.Hix - 10, _border.Loy, _border.Loz),
                 planckwidth,
-                _border.Hiy - Border.Loy,
+                10000,
                 this);
             Player.moveTo(new cVector3(_border.Lox, _border.Loy + 1.0f, _border.Loz + 3));
             ////////////////////////////////////////
             //spawn the powerup
             _ppowerup = new cCritter3Dpowerup(this);
+
+            bossActive = false;
         } 
 
         public void setRoom1( )
@@ -607,9 +612,9 @@ namespace ACFramework
         public void setRoom2()
         {
             Biota.purgeCritters("cCritterDoor");
-            Biota.purgeCritters("cCritterWall");
+            //Biota.purgeCritters("cCritterWall");
             Biota.purgeCritters("cCritterMinion");
-            setBorder(64.0f, 32.0f, 64.0f);
+            setBorder(74.0f, 32.0f, 64.0f);
 
             cRealBox3 skeleton = new cRealBox3();
             skeleton.copy(_border);
@@ -625,7 +630,9 @@ namespace ACFramework
             Player.moveTo(new cVector3(0.0f, 0.0f, cRealBox3.HIZ));
             startNewRoom = Age;
 
-            new cCritterBoss(this);
+            boss = new cCritterBoss(this);
+            bossActive = true;
+            
         }
 		
 		public override void seedCritters() 
@@ -730,6 +737,13 @@ namespace ACFramework
                     setRoom1();
                     doorcollision = false;
                 }
+            }
+
+            //End game when the boss dies
+            if (bossActive && boss.Dead && !_gameover)
+            {
+                MessageBox.Show("You Win!");
+                _gameover = true;
             }
 		} 
 		

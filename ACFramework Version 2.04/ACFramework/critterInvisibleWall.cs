@@ -11,7 +11,7 @@ namespace ACFramework
             float height = WALLPRISMDZ, cGame pownergame = null) : base(enda, endb, thickness,
             height, pownergame)
         {
-            Sprite = new cSprite();
+            Sprite = new cSpriteComposite();
         }
 
         public override bool collide(cCritter pcritter)
