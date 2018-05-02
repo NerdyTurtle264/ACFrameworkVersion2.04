@@ -75,6 +75,7 @@ namespace ACFramework
                 new cVector3( 0.0f, 1.0f, 0.0f ), Position); 
 		}
 
+
         public override void update(ACView pactiveview, float dt)
         {
             base.update(pactiveview, dt); //Always call this first
@@ -83,11 +84,11 @@ namespace ACFramework
             
             //Here's where I added my chosen frame animation for step (6) ****************
             //allows character to return to Running ( now idle on step (7) ) after getting knocked down
-            if (countingFrames)
+            if (CountingFrames)
                 frameCount++;
             if (frameCount > 300)
             {
-                countingFrames = false;
+                CountingFrames = false;
                 frameCount = 0;
                 Sprite.ModelState = State.Run;
             }
@@ -153,6 +154,8 @@ namespace ACFramework
             }
         }
 
+        public bool CountingFrames { get => countingFrames; set => countingFrames = value; }
+
         public override void feellistener(float dt)
         {
             base.feellistener(dt);  // will call cCritter feellistener
@@ -186,7 +189,7 @@ namespace ACFramework
             pMeleeBullet.setRadius(0.0001f);                       //bullet is invisible and does not move, no attack animation yet
             pMeleeBullet.MaxSpeed = 0;
             pMeleeBullet.FixedLifetime = 1;
-            countingFrames = true;
+            CountingFrames = true;
             Player.Sprite.setstate(State.Other, 72, 84, StateType.Hold);    //animation plays, but then breaks all animations afterwards
 
             
@@ -485,6 +488,9 @@ namespace ACFramework
         private bool doorcollision;
         private bool wentThrough = false;
         private float startNewRoom;
+
+        private cCritterBoss boss;
+        private bool bossActive;
 		
 		public cGame3D() 
 		{
@@ -567,12 +573,14 @@ namespace ACFramework
                 new cVector3(_border.Hix - 10, _border.Loy, _border.Hiz),
                 new cVector3(Border.Hix - 10, _border.Loy, _border.Loz),
                 planckwidth,
-                _border.Hiy - Border.Loy,
+                10000,
                 this);
             Player.moveTo(new cVector3(_border.Lox, _border.Loy + 1.0f, _border.Loz + 3));
             ////////////////////////////////////////
             //spawn the powerup
             _ppowerup = new cCritter3Dpowerup(this);
+
+            bossActive = false;
         } 
 
         public void setRoom1( )
@@ -607,9 +615,9 @@ namespace ACFramework
         public void setRoom2()
         {
             Biota.purgeCritters("cCritterDoor");
-            Biota.purgeCritters("cCritterWall");
+            //Biota.purgeCritters("cCritterWall");
             Biota.purgeCritters("cCritterMinion");
-            setBorder(64.0f, 32.0f, 64.0f);
+            setBorder(74.0f, 32.0f, 64.0f);
 
             cRealBox3 skeleton = new cRealBox3();
             skeleton.copy(_border);
@@ -625,7 +633,9 @@ namespace ACFramework
             Player.moveTo(new cVector3(0.0f, 0.0f, cRealBox3.HIZ));
             startNewRoom = Age;
 
-            new cCritterBoss(this);
+            boss = new cCritterBoss(this);
+            bossActive = true;
+            
         }
 		
 		public override void seedCritters() 
@@ -730,6 +740,13 @@ namespace ACFramework
                     setRoom1();
                     doorcollision = false;
                 }
+            }
+
+            //End game when the boss dies
+            if (bossActive && boss.Dead && !_gameover)
+            {
+                MessageBox.Show("You Win!");
+                _gameover = true;
             }
 		} 
 		

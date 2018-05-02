@@ -7,6 +7,7 @@ namespace ACFramework
 {
     class cCritterBoss : cCritterArmedRobot
     {
+        private bool _dead;
         public cCritterBoss(cGame pOwnerGame = null) : base(pOwnerGame)
         {
             MaxSpeed = 40;
@@ -20,7 +21,7 @@ namespace ACFramework
             AimToAttitudeLock = false;
             //copyMotionMatrixToAttitudeMatrix();
             AttitudeToMotionLock = false;
-            BULLETRADIUS = 0.9f;
+            BULLETRADIUS = 0.4f;
             setMoveBox(new cRealBox3(new cVector3(Game.Border.Lox, Game.Border.Loy, Game.Border.Loz + 3),
                                      new cVector3(Game.Border.Hix, Game.Border.Hiy, Game.Border.Hiz - 3)));
 
@@ -28,6 +29,7 @@ namespace ACFramework
             rotateAttitude(new cSpin((float) Math.PI * 3f/2f, new cVector3(1,0,0)));
             //set looking left
             rotateAttitude(new cSpin((float)Math.PI *3f / 2f, new cVector3(0, 0, 1)));
+            _dead = false;
         }
 
         public override void update(ACView pactiveview, float dt)
@@ -61,6 +63,15 @@ namespace ACFramework
             base.die();
             Game.Player.addScore(100);
             Framework.snd.play(Sound.Crunch);
+            _dead = true;
+        }
+
+        public bool Dead
+        {
+            get
+            {
+                return _dead;
+            }
         }
     }
 

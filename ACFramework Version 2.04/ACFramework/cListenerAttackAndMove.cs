@@ -13,7 +13,7 @@ namespace ACFramework
 
         public cListenerAttackAndMove()
         {
-            _hopStrength = 1000;
+            _hopStrength = 100;
             _meleeAttacking = false;
         }
         public override void listen(float dt, cCritter pcritter)
@@ -28,8 +28,8 @@ namespace ACFramework
             bool pagedown = Framework.Keydev[vk.PageDown];
             bool lControl = Framework.Keydev[vk.ControlLeft];
 
-
-            if (!left && !right && !down && !up && !pagedown && !space && !lControl)
+            cCritter3DPlayer playerCritter = (cCritter3DPlayer)pcritter;
+            if (!left && !right && !down && !up && !pagedown && !space && !lControl && !playerCritter.CountingFrames)
             {
                 pcritter.Velocity = new cVector3(0.0f, pcritter.Velocity.Y, 0.0f);
                 pcritter.Acceleration = new cVector3(0.0f, pcritter.Acceleration.Y, 0.0f);
@@ -37,14 +37,15 @@ namespace ACFramework
                 return;
             }
 
-            if (up || down || right || left)
+            if ((up || down || right || left) && !_hopping)
                 pcritter.Sprite.ModelState = State.Run;
 
+
             if (up)
-                pcritter.Velocity = new cVector3(-pcritter.MaxSpeed / 2, pcritter.Velocity.Y, pcritter.Velocity.Z);
+                pcritter.Velocity = new cVector3(-pcritter.MaxSpeed / 4, pcritter.Velocity.Y, pcritter.Velocity.Z);
 
             else if (down)
-                pcritter.Velocity = new cVector3(pcritter.MaxSpeed / 2, pcritter.Velocity.Y, pcritter.Velocity.Z);
+                pcritter.Velocity = new cVector3(pcritter.MaxSpeed / 4, pcritter.Velocity.Y, pcritter.Velocity.Z);
             else {
                 pcritter.Velocity = new cVector3(0, pcritter.Velocity.Y, pcritter.Velocity.Z);
                     }
@@ -59,9 +60,9 @@ namespace ACFramework
             //   if (pagedown)
             //     pcritter.Velocity = new cVector3(0.0f, pcritter.MaxSpeed, 0.0f);
             if (right)
-                pcritter.Velocity = new cVector3(pcritter.Velocity.X, pcritter.Velocity.Y, -pcritter.MaxSpeed / 2);
+                pcritter.Velocity = new cVector3(pcritter.Velocity.X, pcritter.Velocity.Y, -pcritter.MaxSpeed / 4);
             else if (left)
-                pcritter.Velocity = new cVector3(pcritter.Velocity.X, pcritter.Velocity.Y, pcritter.MaxSpeed / 2);
+                pcritter.Velocity = new cVector3(pcritter.Velocity.X, pcritter.Velocity.Y, pcritter.MaxSpeed / 4);
             else
                 pcritter.Velocity = new cVector3(pcritter.Velocity.X, pcritter.Velocity.Y, 0);
 
@@ -73,7 +74,7 @@ namespace ACFramework
                 pcritter.copyMotionMatrixToAttitudeMatrix();
             //Note that if pcritter is cCritterArmed*, then the cCritterArmed.listen does more stuff.
 
-            if (pcritter.Velocity.Y == 0)
+            if (pcritter.Position.Y <= pcritter.Game.Border.Loy + 2)
             {
                 _hopping = false;
             }
