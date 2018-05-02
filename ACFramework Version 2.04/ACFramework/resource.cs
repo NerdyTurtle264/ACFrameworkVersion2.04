@@ -367,10 +367,10 @@ namespace ACFramework
             new ModelsMD2Info( "link", "soft_link.pcx", 0.1f, true ),
             new ModelsMD2Info( "pknight", "ctf_b.pcx", 0.15f, true ),
             new ModelsMD2Info( "citrusfrog", "BigRed.pcx", 0.3f, true ),
-            new ModelsMD2Info( "Tekk-blade", "blade_black.pcx", 0.3f, false),
-            new ModelsMD2Info( "Hunter", "darkhunter.pcx", 0.3f, false),
+            new ModelsMD2Info( "Tekk-blade", "blade_black.pcx", 0.1f, false),
+            new ModelsMD2Info( "Hunter", "darkhunter.pcx", 0.1f, false),
             new ModelsMD2Info( "UFO", "green.pcx", 0.3f, false),
-            new ModelsMD2Info( "EVA-01", "Eva-01.pcx", 0.0f, false)
+            new ModelsMD2Info( "EVA-01", "Eva-01.pcx", 0.15f, false)
         };            
 
         private static int[] randomCritters;
