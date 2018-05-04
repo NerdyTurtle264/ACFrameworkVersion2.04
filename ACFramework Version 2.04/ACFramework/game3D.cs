@@ -521,7 +521,7 @@ namespace ACFramework
             _seedPowerupCount = 3;
 			setPlayer( new cCritter3DPlayer( this ));
             Player.setMoveBox(skeleton);
-			_ptreasure = new cCritterTreasure( this ); 
+			//_ptreasure = new cCritterTreasure( this ); 
             _ppowerup = new cCritter3Dpowerup(this);                //powerup//////////////
 
             /* In this world the x and y go left and up respectively, while z comes out of the screen.
