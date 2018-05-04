@@ -527,7 +527,7 @@ namespace ACFramework
             _seedCheatCount = 1;
 			setPlayer( new cCritter3DPlayer( this ));
             Player.setMoveBox(skeleton);
-			_ptreasure = new cCritterTreasure( this ); 
+			//_ptreasure = new cCritterTreasure( this ); 
             _ppowerup = new cCritter3Dpowerup(this);                //powerup//////////////
             _pcheat = new cCritter3Dpowerup(this);
 
