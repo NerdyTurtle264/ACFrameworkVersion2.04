@@ -376,7 +376,7 @@ namespace ACFramework
             base.update(pactiveview, dt); //Always call this first
             if ((_outcode & cRealBox3.BOX_HIZ) != 0) /* use bitwise AND to check if a flag is set. */
                 delete_me(); //tell the game to remove yourself if you fall up to the hiz.
-            if (distanceTo(Player) < 2) //here's where we put our "power up" effects
+            if (distanceTo(Player) < 5) //here's where we put our "power up" effects
             {
                 Player.addHealth(healthBonus);                                              //add health
                 Player.addScore(scoreBonus);                                               //add score
