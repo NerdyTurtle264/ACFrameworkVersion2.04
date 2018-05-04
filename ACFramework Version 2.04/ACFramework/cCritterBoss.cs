@@ -73,6 +73,21 @@ namespace ACFramework
                 return _dead;
             }
         }
+
+        public override bool collide(cCritter pother)
+        {
+            if (base.collide(pother))
+            {
+                if (pother.IsKindOf("cCritter3DPlayer"))
+                {
+                    Framework.snd.play(Sound.GlassBreaking);
+                    pother.addScore(12);
+                    pother.addVelocity(new cVector3(0, 0, -5));
+                }
+                return true;
+            }
+            return false;
+        }
     }
 
     class cForceBossMovement : cForce

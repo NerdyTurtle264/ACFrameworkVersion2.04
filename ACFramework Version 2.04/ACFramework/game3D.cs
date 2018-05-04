@@ -598,10 +598,17 @@ namespace ACFramework
             float zpos = 0.0f; /* Point on the z axis where we set down the wall.  0 would be center,
 			halfway down the hall, but we can offset it if we like. */
             Player.moveTo(new cVector3(0, skeleton.Loy, skeleton.Hiz));
-            cCritterWall enteredDoor = new cCritterWall(new cVector3(_border.Midx, _border.Loy, _border.Hiz), new cVector3(_border.Midx, _border.Loy + 6, _border.Hiz),
+            cCritterWall enteredDoor = new cCritterWallClosingDoor(new cVector3(_border.Midx, _border.Loy, _border.Hiz), new cVector3(_border.Midx, _border.Loy + 6, _border.Hiz),
                 0.5f, 3, this);
             enteredDoor.Sprite = new cSpriteTextureBox(enteredDoor.Skeleton, BitmapRes.Door);
             enteredDoor.roll((float)Math.PI / 2);
+
+            cCritterWall centralWall1 = new cCritterInvisibleWall(new cVector3(_border.Lox+15, _border.Loy, _border.Midz - 5), new cVector3(_border.Hix, _border.Loy, _border.Midz - 5),
+                15, .3f, this);
+            centralWall1.Sprite = new cSpriteTextureBox(centralWall1.Skeleton, Color.Red);
+            cCritterWall centralWall2 = new cCritterInvisibleWall(new cVector3(_border.Lox, _border.Loy, _border.Midz + 5), new cVector3(_border.Hix-15, _border.Loy, _border.Midz + 5),
+                15, .3f, this);
+            centralWall2.Sprite = new cSpriteTextureBox(centralWall2.Skeleton, Color.Red);
 
             //Player.reset();
             float height = 0.1f * _border.YSize;
@@ -615,7 +622,8 @@ namespace ACFramework
         public void setRoom2()
         {
             Biota.purgeCritters("cCritterDoor");
-            //Biota.purgeCritters("cCritterWall");
+            Biota.purgeCritters("cCritterWall");
+
             Biota.purgeCritters("cCritterMinion");
             setBorder(74.0f, 32.0f, 64.0f);
 
@@ -636,6 +644,12 @@ namespace ACFramework
             boss = new cCritterBoss(this);
             bossActive = true;
             
+            cCritterWall invisWall = new cCritterInvisibleWall(
+                new cVector3(_border.Hix - 10, _border.Loy, _border.Hiz),
+                new cVector3(Border.Hix - 10, _border.Loy, _border.Loz),
+                0.75f,
+                10000,
+                this);
         }
 		
 		public override void seedCritters() 
