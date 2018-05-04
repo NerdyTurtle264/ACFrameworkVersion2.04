@@ -28,7 +28,7 @@ namespace ACFramework
             bool didareset = false;
             if (_pgame.NewGame)
             {
-                MessageBox.Show("PRESS ENTER To Start Game.\nWASD to move\nSpacebar to jump\nAlt to shoot\nCtrl to punch\nCheat is the powerup at the beginning\nThere are additional powerups scattered around the levels");
+                MessageBox.Show("PRESS ENTER\nTo Start Game.");
                 RESTART = true;
                 _pgame.start();
                 didareset = true;
