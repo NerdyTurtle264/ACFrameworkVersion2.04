@@ -37,7 +37,7 @@ namespace ACFramework
                 return;
             }
 
-            if ((up || down || right || left) && !_hopping)
+            if ((up || down || right || left) && !_hopping && !playerCritter.CountingFrames)
                 pcritter.Sprite.ModelState = State.Run;
 
 

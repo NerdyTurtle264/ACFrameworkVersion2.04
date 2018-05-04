@@ -323,6 +323,8 @@ namespace ACFramework
     //
     class cCritter3Dpowerup : cCritter3Dcharacter
     {
+        private int healthBonus = 10;
+        private int scoreBonus = 10;
 
         public cCritter3Dpowerup(cGame pownergame)
             : base(pownergame)
@@ -347,7 +349,6 @@ namespace ACFramework
             MinTwitchThresholdSpeed = 4.0f; //Means sprite doesn't switch direction unless it's moving fast 
             randomizePosition(new cRealBox3(new cVector3(_movebox.Lox, _movebox.Loy, _movebox.Loz + 4.0f),
                 new cVector3(_movebox.Hix, _movebox.Loy, _movebox.Midz - 1.0f)));
-            moveTo(new cVector3(MoveBox.Lox + 10, _movebox.Loy, MoveBox.Hiz/2));               //move to powerup location
             
             
             
@@ -377,8 +378,8 @@ namespace ACFramework
                 delete_me(); //tell the game to remove yourself if you fall up to the hiz.
             if (distanceTo(Player) < 2) //here's where we put our "power up" effects
             {
-                Player.addHealth(100);                                              //add health
-                Player.addScore(100);                                               //add score
+                Player.addHealth(healthBonus);                                              //add health
+                Player.addScore(scoreBonus);                                               //add score
                 die();
             }
         }
@@ -406,6 +407,8 @@ namespace ACFramework
             }
         }
 
+        public int HealthBonus { get => healthBonus; set => healthBonus = value; }
+        public int ScoreBonus { get => scoreBonus; set => scoreBonus = value; }
     }
 
     class cCritterTreasure : cCritter 
@@ -484,7 +487,9 @@ namespace ACFramework
 		public static readonly float MAXPLAYERSPEED = 60.0f; 
 		private cCritterTreasure _ptreasure;            
         private cCritter3Dpowerup _ppowerup;                        //powerup data member
+        private cCritter3Dpowerup _pcheat;
         private int _seedPowerupCount;
+        private int _seedCheatCount;
         private bool doorcollision;
         private bool wentThrough = false;
         private float startNewRoom;
@@ -519,10 +524,12 @@ namespace ACFramework
 			WrapFlag = cCritter.BOUNCE; 
 			_seedcount = 7;
             _seedPowerupCount = 3;
+            _seedCheatCount = 1;
 			setPlayer( new cCritter3DPlayer( this ));
             Player.setMoveBox(skeleton);
 			_ptreasure = new cCritterTreasure( this ); 
             _ppowerup = new cCritter3Dpowerup(this);                //powerup//////////////
+            _pcheat = new cCritter3Dpowerup(this);
 
             /* In this world the x and y go left and up respectively, while z comes out of the screen.
 		A wall views its "thickness" as in the y direction, which is up here, and its
@@ -578,7 +585,7 @@ namespace ACFramework
             Player.moveTo(new cVector3(_border.Lox, _border.Loy + 1.0f, _border.Loz + 3));
             ////////////////////////////////////////
             //spawn the powerup
-            _ppowerup = new cCritter3Dpowerup(this);
+            //_ppowerup = new cCritter3Dpowerup(this);
 
             bossActive = false;
         } 
@@ -614,6 +621,8 @@ namespace ACFramework
             float height = 0.1f * _border.YSize;
             float ycenter = -_border.YRadius + height / 2.0f;
             float wallthickness = cGame3D.WALLTHICKNESS;
+            _seedPowerupCount = 3;
+            seedPowerups();
 
             wentThrough = true;
             startNewRoom = Age;
@@ -661,19 +670,36 @@ namespace ACFramework
             Player.moveTo(new cVector3(0.0f, Border.Loy, Border.Hiz - 3.0f));
             // _ppowerup = new cCritter3Dpowerup(this);   
             seedPowerups();
+            seedCheats();
                                                        /* We start at hiz and move towards	loz */
-        } 
+        }
 
         public void seedPowerups()
         {
             for (int i = 0; i < _seedPowerupCount; i++)
             {
                 _ppowerup = new cCritter3Dpowerup(this);
+
+                _ppowerup.moveTo(new cVector3(_border.Lox + 10, _border.Loy, _border.Hiz / 2));               //move to powerup location
+
+            }
+        }
+        public void seedCheats()
+        {
+            for (int i = 0; i < _seedCheatCount; i++)
+            {
+                _pcheat = new cCritter3Dpowerup(this);
+
+                _pcheat.moveTo(new cVector3(_border.Lox + 20, _border.Loy, _border.Hiz - 5));               //move to powerup location
+                _pcheat.HealthBonus = 1000;
+                _pcheat.ScoreBonus = 1000;
+                
+
             }
         }
 
-		
-		public void setdoorcollision( ) { doorcollision = true; } 
+
+        public void setdoorcollision( ) { doorcollision = true; } 
 		
 		public override ACView View 
 		{
