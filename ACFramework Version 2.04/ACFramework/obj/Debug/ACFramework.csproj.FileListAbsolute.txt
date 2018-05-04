@@ -91,36 +91,6 @@ C:\Users\jchilds\Desktop\ACFramework Version 2.03\ACFramework\bin\Debug\ACFramew
 C:\Users\jchilds\Desktop\ACFramework Version 2.03\ACFramework\obj\Debug\ACFramework.exe
 C:\Users\jchilds\Desktop\ACFramework Version 2.03\ACFramework\obj\Debug\ACFramework.pdb
 C:\Users\jchilds\Desktop\ACFramework Version 2.03\ACFramework\obj\Debug\ACFramework.csprojResolveAssemblyReference.cache
-<<<<<<< HEAD
-E:\Final Project 375\ACFrameworkVersion2.04\ACFramework Version 2.04\ACFramework\bin\Debug\ACFramework.exe
-E:\Final Project 375\ACFrameworkVersion2.04\ACFramework Version 2.04\ACFramework\bin\Debug\ACFramework.pdb
-E:\Final Project 375\ACFrameworkVersion2.04\ACFramework Version 2.04\ACFramework\bin\Debug\OpenTK.dll.config
-E:\Final Project 375\ACFrameworkVersion2.04\ACFramework Version 2.04\ACFramework\obj\Debug\ACFramework.csprojResolveAssemblyReference.cache
-E:\Final Project 375\ACFrameworkVersion2.04\ACFramework Version 2.04\ACFramework\obj\Debug\ACFramework.Properties.Resources.resources
-E:\Final Project 375\ACFrameworkVersion2.04\ACFramework Version 2.04\ACFramework\obj\Debug\ACFramework.csproj.GenerateResource.Cache
-E:\Final Project 375\ACFrameworkVersion2.04\ACFramework Version 2.04\ACFramework\obj\Debug\ACFramework.csproj.CoreCompileInputs.cache
-E:\Final Project 375\ACFrameworkVersion2.04\ACFramework Version 2.04\ACFramework\obj\Debug\ACFramework.exe
-E:\Final Project 375\ACFrameworkVersion2.04\ACFramework Version 2.04\ACFramework\obj\Debug\ACFramework.pdb
-=======
-C:\Uni Work\CIS 375\Project\Project\ACFrameworkVersion2.04\ACFramework Version 2.04\ACFramework\bin\Debug\ACFramework.exe
-C:\Uni Work\CIS 375\Project\Project\ACFrameworkVersion2.04\ACFramework Version 2.04\ACFramework\bin\Debug\ACFramework.pdb
-C:\Uni Work\CIS 375\Project\Project\ACFrameworkVersion2.04\ACFramework Version 2.04\ACFramework\bin\Debug\OpenTK.dll.config
-C:\Uni Work\CIS 375\Project\Project\ACFrameworkVersion2.04\ACFramework Version 2.04\ACFramework\obj\Debug\ACFramework.csprojResolveAssemblyReference.cache
-C:\Uni Work\CIS 375\Project\Project\ACFrameworkVersion2.04\ACFramework Version 2.04\ACFramework\obj\Debug\ACFramework.Properties.Resources.resources
-C:\Uni Work\CIS 375\Project\Project\ACFrameworkVersion2.04\ACFramework Version 2.04\ACFramework\obj\Debug\ACFramework.csproj.GenerateResource.Cache
-C:\Uni Work\CIS 375\Project\Project\ACFrameworkVersion2.04\ACFramework Version 2.04\ACFramework\obj\Debug\ACFramework.csproj.CoreCompileInputs.cache
-C:\Uni Work\CIS 375\Project\Project\ACFrameworkVersion2.04\ACFramework Version 2.04\ACFramework\obj\Debug\ACFramework.exe
-C:\Uni Work\CIS 375\Project\Project\ACFrameworkVersion2.04\ACFramework Version 2.04\ACFramework\obj\Debug\ACFramework.pdb
-C:\Users\rlb77_000\Documents\Clarion\Spring 2018\CIS375\FinalGroupProj\ACFrameworkVersion2.04\ACFrameworkVersion2.04\ACFramework Version 2.04\ACFramework\bin\Debug\ACFramework.exe
-C:\Users\rlb77_000\Documents\Clarion\Spring 2018\CIS375\FinalGroupProj\ACFrameworkVersion2.04\ACFrameworkVersion2.04\ACFramework Version 2.04\ACFramework\bin\Debug\ACFramework.pdb
-C:\Users\rlb77_000\Documents\Clarion\Spring 2018\CIS375\FinalGroupProj\ACFrameworkVersion2.04\ACFrameworkVersion2.04\ACFramework Version 2.04\ACFramework\bin\Debug\OpenTK.dll.config
-C:\Users\rlb77_000\Documents\Clarion\Spring 2018\CIS375\FinalGroupProj\ACFrameworkVersion2.04\ACFrameworkVersion2.04\ACFramework Version 2.04\ACFramework\obj\Debug\ACFramework.csprojResolveAssemblyReference.cache
-C:\Users\rlb77_000\Documents\Clarion\Spring 2018\CIS375\FinalGroupProj\ACFrameworkVersion2.04\ACFrameworkVersion2.04\ACFramework Version 2.04\ACFramework\obj\Debug\ACFramework.Properties.Resources.resources
-C:\Users\rlb77_000\Documents\Clarion\Spring 2018\CIS375\FinalGroupProj\ACFrameworkVersion2.04\ACFrameworkVersion2.04\ACFramework Version 2.04\ACFramework\obj\Debug\ACFramework.csproj.GenerateResource.Cache
-C:\Users\rlb77_000\Documents\Clarion\Spring 2018\CIS375\FinalGroupProj\ACFrameworkVersion2.04\ACFrameworkVersion2.04\ACFramework Version 2.04\ACFramework\obj\Debug\ACFramework.csproj.CoreCompileInputs.cache
-C:\Users\rlb77_000\Documents\Clarion\Spring 2018\CIS375\FinalGroupProj\ACFrameworkVersion2.04\ACFrameworkVersion2.04\ACFramework Version 2.04\ACFramework\obj\Debug\ACFramework.exe
-C:\Users\rlb77_000\Documents\Clarion\Spring 2018\CIS375\FinalGroupProj\ACFrameworkVersion2.04\ACFrameworkVersion2.04\ACFramework Version 2.04\ACFramework\obj\Debug\ACFramework.pdb
->>>>>>> master
 C:\Users\s_jdboden\Documents\Git\ACFrameworkVersion2.04\ACFramework Version 2.04\ACFramework\obj\Debug\ACFramework.csprojResolveAssemblyReference.cache
 C:\Users\s_jdboden\Documents\Git\ACFrameworkVersion2.04\ACFramework Version 2.04\ACFramework\obj\Debug\ACFramework.Properties.Resources.resources
 C:\Users\s_jdboden\Documents\Git\ACFrameworkVersion2.04\ACFramework Version 2.04\ACFramework\obj\Debug\ACFramework.csproj.GenerateResource.Cache
